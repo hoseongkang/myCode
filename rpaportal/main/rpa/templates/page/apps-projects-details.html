@@ -1,0 +1,2750 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8"/>
+    <title> RPA PORTAL </title>
+    <link rel="stylesheet" href="{% static 'assets/vendor/jquery-toast-plugin/jquery.toast.min.css' %}">
+    {% include 'page/head_basic_scripts.html' %}
+    <!-- Plugin css -->
+    <style>
+    .modal-header {
+      cursor: grab;
+    }
+    </style>
+    <style>
+    .tooltip-inner {
+        max-width: 300px;
+    }
+    .custom-card {
+        display: flex;
+        justify-content: space-between;
+    }
+    </style>
+</head>
+
+<body>
+<!-- Begin page -->
+<div class="wrapper">
+    {% include 'page/navbar_top.html' %}
+    {% include 'page/navbar_left.html' %}
+
+    <div class="content-page">
+        <div class="content">
+            {% csrf_token %}
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a href="javascript:history.back();">
+                                        <i class="ri-arrow-left-s-line" style="font-size: 22px;">
+                                        </i>
+                                    </a></li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">Details</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class="row">
+                    <div class="col-xxl-8 col-lg-6">
+                        <!-- project card -->
+                        <div class="card d-block">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h3 class="mt-0">
+                                        <a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                           data-bs-toggle="modal" data-bs-target="#title-modal" id="rpa_taskname">{{ taskname }}</a>
+                                        &nbsp;&nbsp;
+                                        <small id="taskid">{{ taskid }}</small>
+                                    </h3>
+
+                                    <div id="title-modal" class="modal fade" tabindex="-1" role="dialog"
+                                     aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title" id="title-modalLabel">과제명</h4>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-hidden="true"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="titleinput" class="form-label" style="font-size: 13px;">*최대 길이 25자</label>
+                                                    <input type="text" id="titleinput" placeholder="과제명 입력" class="form-control" value="{{ taskname }}" maxlength="25" data-toggle="maxlength">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+
+                                                <button type="button" class="btn btn-primary"
+                                                        id="savetitle">저장
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                    <div>
+                                        <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                                data-bs-target="#info-header-modal">
+                                            <span type="button" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                  data-bs-title="퇴사/인사 이동 등 과제 담당 변동 시 과제 이관 요청">담당 변경</span>
+                                        </button>
+                                    </div>
+                                    <!-- Info Header Modal -->
+                                    <div id="info-header-modal" class="modal fade" tabindex="-1" role="dialog"
+                                         aria-labelledby="info-header-modalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-info">
+                                                    <h4 class="modal-title" id="info-header-modalLabel">담당 변경</h4>
+                                                    <button type="button" class="btn-close btn-close-white"
+                                                            data-bs-dismiss="modal" aria-hidden="true"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <label for="project-overview" class="form-label">담당자</label>
+                                                    <div class="spinner-border" role="status" id="spinner_overview"
+                                                         style="font-size: 7px; height: 13px; width: 13px;"
+                                                         data-bs-toggle="tooltip" data-bs-title="담당자 정보 불러오는 중"></div>
+                                                    <select class="select2 form-control select2-multiple"
+                                                            data-toggle="select2" id="mySelect_type"
+                                                            style="z-index: 9999;"
+                                                            multiple="multiple" data-placeholder="선택">
+                                                    </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-info" id="save_managerbtn">
+                                                        저장
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                {% if '접수' in progress_status %}
+                                <span class="badge bg-info">{{ progress_status }}</span>
+                                {% elif '개발중' in progress_status %}
+                                <span class="badge bg-primary">{{ progress_status }}</span>
+                                {% elif '재개발' in progress_status %}
+                                <span class="badge badge-primary-lighten">{{ progress_status }}</span>
+                                {% elif '개발완료' in progress_status %}
+                                <span class="badge bg-success">{{ progress_status }}</span>
+                                {% elif '개발보류' in progress_status %}
+                                <span class="badge bg-warning">{{ progress_status }}</span>
+                                {% elif '임시중단' in progress_status %}
+                                <span class="badge bg-warning">{{ progress_status }}</span>
+                                {% elif '운영중단' in progress_status %}
+                                <span class="badge badge-dark-lighten">{{ progress_status }}</span>
+                                {% elif '개발중단' in progress_status %}
+                                <span class="badge bg-danger">{{ progress_status }}</span>
+                                {% elif '요청철회' in progress_status %}
+                                <span class="badge bg-danger">{{ progress_status }}</span>
+                                {% endif %}
+
+                                <hr>
+                                <h5>
+                                    <a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                       data-bs-toggle="modal" data-bs-target="#explanation-modal">
+                                        업무 설명
+                                    </a>
+                                </h5>
+
+                                <div id="explanation-modal" class="modal fade" tabindex="-1" role="dialog"
+                                     aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h4 class="modal-title" id="standard-modalLabel">업무 설명</h4>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-hidden="true"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <textarea class="form-control form-control-light mb-2"
+                                                              placeholder="작성"
+                                                              id="explanation-textarea"
+                                                              rows="7">{{ taskexplanation }}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+
+                                                <button type="button" class="btn btn-primary"
+                                                        id="saveExplanation">저장
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="scrollable-content" style="max-height: 200px; overflow-y: auto;">
+                                    <div class="text-muted mb-2" id="explanation-view">
+                                        {{ taskexplanation|linebreaks }}
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+                                            <h5>
+                                                <a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                                   data-bs-toggle="modal" data-bs-target="#biztype-modal">
+                                                    사업부
+                                                </a>
+                                            </h5>
+                                            <div id="biztype-modal" class="modal fade" tabindex="-1" role="dialog"
+                                                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title" id="biztype-modalLabel">사업부</h4>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-hidden="true"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <select class="form-select mb-3" id="bizgrp">
+                                                                    <option value="식품">식품</option>
+                                                                    <option value="화학">화학</option>
+                                                                    <option value="바이오">바이오</option>
+                                                                    <option value="패키징">패키징</option>
+                                                                    <option value="Staff">Staff</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-info"
+                                                                    data-bs-dismiss="modal"
+                                                                    id="saveBiztype">저장
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span id="biztype_text" class="badge bg-info" style="font-size: 13px;">{{ biztype }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+
+
+
+                                            <h5>
+                                                <a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                                   data-bs-toggle="modal" data-bs-target="#g1-modal">
+                                                    업무군
+                                                </a>
+                                            </h5>
+
+
+
+                                            <div id="g1-modal" class="modal fade" tabindex="-1" role="dialog"
+                                                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title" id="g1-modalLabel">업무군</h4>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-hidden="true"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <select class="select2 form-control select2-multiple"
+                                                                        data-toggle="select2" id="mySelect_type2"
+                                                                        multiple="multiple" data-placeholder="선택">
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-info"
+                                                                    id="saveG1">저장
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p id="task_g1_text">
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+                                            <h5>
+                                                <a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                                   data-bs-toggle="modal" data-bs-target="#g2-modal">
+                                                    업무 유형
+                                                </a>
+                                            </h5>
+                                            <div id="g2-modal" class="modal fade" tabindex="-1" role="dialog"
+                                                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title" id="g2-modalLabel">업무 유형</h4>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-hidden="true"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <select class="select2 form-control select2-multiple"
+                                                                        data-toggle="select2" id="mySelect_type3"
+                                                                        multiple="multiple" data-placeholder="선택">
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-info"
+                                                                    id="saveG2">저장
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p id="task_g2_text">{{ task_g2 }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+                                            <h5>
+                                                <a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                                   data-bs-toggle="modal" data-bs-target="#rpamethod-modal">
+                                                    자동화 방식
+                                                </a>
+                                            </h5>
+                                            <div id="rpamethod-modal" class="modal fade" tabindex="-1" role="dialog"
+                                                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title" id="rpamethod-modalLabel">업무 유형</h4>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-hidden="true"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <ul class="list-group">
+                                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                                        <input class="form-check-input me-1"
+                                                                               type="radio"
+                                                                               name="listGroupRadio" value=""
+                                                                               id="firstRadio" checked>
+                                                                        <label class="form-check-label"
+                                                                               for="firstRadio">지정된 시간
+                                                                        </label>
+
+                                                                        <div>
+                                                                            <i class="ri-information-line"
+                                                                               type="button"
+                                                                               data-bs-toggle="offcanvas"
+                                                                               data-bs-target="#offcanvasRight"
+                                                                               aria-controls="offcanvasRight"
+                                                                               style="font-size: 17px;"></i>
+
+                                                                            <div class="offcanvas offcanvas-end"
+                                                                                 tabindex="-1"
+                                                                                 id="offcanvasRight"
+                                                                                 aria-labelledby="offcanvasRightLabel">
+                                                                                <div class="offcanvas-header">
+                                                                                    <h5 id="offcanvasRightLabel">
+                                                                                        <mark>[지정된 시간]</mark>
+                                                                                    </h5>
+                                                                                    <button type="button"
+                                                                                            class="btn-close text-reset"
+                                                                                            data-bs-dismiss="offcanvas"
+                                                                                            aria-label="Close"></button>
+                                                                                </div>
+                                                                                <div class="offcanvas-body">
+                                                                                    <div>
+                                                                                        RPA Bot이 미리 설정한 시간에 맞춰 반복 수행
+                                                                                    </div>
+                                                                                    <h5 class="mt-3">예시</h5>
+                                                                                    <ul class="ps-3">
+                                                                                        <li class="">매일 오전 9시 반복 수행
+                                                                                            (*영업일 포함 혹은 제외)
+                                                                                        </li>
+                                                                                        <li class="">매일 9시, 13시, 18시
+                                                                                            수행
+                                                                                        </li>
+                                                                                        <li class="">매주 월요일 오후 3시 수행
+                                                                                        </li>
+                                                                                        <li class="">매월 1~3영업일 반복 수행
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                    <br>
+                                                                                    <hr>
+                                                                                    <br>
+                                                                                    <div class="row">
+                                                                                        <div class="col-12">
+                                                                                            <div class="timeline"
+                                                                                                 dir="ltr"
+                                                                                                 style="font-size: 11px;">
+
+                                                                                                <div class="timeline-show mb-3 text-center">
+                                                                                                    <h5 class="m-0 time-show-name"
+                                                                                                        style="font-size: 13px; background-color: #FFF2CC;">
+                                                                                                        오전 9시 RPA
+                                                                                                        수행 시작</h5>
+                                                                                                </div>
+
+                                                                                                <div class="timeline-lg-item timeline-item-left">
+                                                                                                    <div class="timeline-desk">
+                                                                                                        <div class="timeline-box">
+                                                                                                            <span class="arrow-alt"></span>
+                                                                                                            <span class="timeline-icon"><i
+                                                                                                                    class="mdi mdi-adjust"></i></span>
+                                                                                                            <h4 class="mt-0 mb-1 font-11">
+                                                                                                                시스템
+                                                                                                                접속</h4>
+                                                                                                            <p>Excel
+                                                                                                                다운로드</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                <div class="timeline-lg-item timeline-item-right">
+                                                                                                    <div class="timeline-desk">
+                                                                                                        <div class="timeline-box">
+                                                                                                            <span class="arrow"></span>
+                                                                                                            <span class="timeline-icon"><i
+                                                                                                                    class="mdi mdi-adjust"></i></span>
+                                                                                                            <h4 class="mt-0 mb-1 font-11">
+                                                                                                                Excel
+                                                                                                                가공</h4>
+                                                                                                            <p>보고서
+                                                                                                                생성</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+
+
+                                                                                                <div class="timeline-lg-item timeline-item-left">
+                                                                                                    <div class="timeline-desk">
+                                                                                                        <div class="timeline-box">
+                                                                                                            <span class="arrow-alt"></span>
+                                                                                                            <span class="timeline-icon"><i
+                                                                                                                    class="mdi mdi-adjust"></i></span>
+                                                                                                            <h4 class="mt-0 mb-1 font-11">
+                                                                                                                RPA 메일
+                                                                                                                발송
+                                                                                                            </h4>
+                                                                                                            <p>보고서
+                                                                                                                발송</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div class="timeline-show my-3 text-center">
+                                                                                                    <h5 class="m-0 time-show-name"
+                                                                                                        style="font-size: 13px;">
+                                                                                                        RPA 수행 완료</h5>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <!-- end timeline -->
+                                                                                        </div> <!-- end col -->
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+
+                                                                    </li>
+                                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                                        <input class="form-check-input me-1"
+                                                                               type="radio"
+                                                                               name="listGroupRadio" value=""
+                                                                               id="secondRadio">
+                                                                        <label class="form-check-label"
+                                                                               for="secondRadio">내가 원할 때
+                                                                        </label>
+                                                                        <div>
+                                                                            <i class="ri-information-line"
+                                                                               type="button"
+                                                                               data-bs-toggle="offcanvas"
+                                                                               data-bs-target="#offcanvasRight1"
+                                                                               aria-controls="offcanvasRight1"
+                                                                               style="font-size: 17px;"></i>
+
+                                                                            <div class="offcanvas offcanvas-end"
+                                                                                 tabindex="-1"
+                                                                                 id="offcanvasRight1"
+                                                                                 aria-labelledby="offcanvasRightLabel1">
+                                                                                <div class="offcanvas-header">
+                                                                                    <h5 id="offcanvasRightLabel1">
+                                                                                        <mark>[내가 원할 때]</mark>
+                                                                                    </h5>
+                                                                                    <button type="button"
+                                                                                            class="btn-close text-reset"
+                                                                                            data-bs-dismiss="offcanvas"
+                                                                                            aria-label="Close"></button>
+                                                                                </div>
+                                                                                <div class="offcanvas-body">
+                                                                                    <div>
+                                                                                        RPA Bot에게 직접 메일 발송으로 RPA 업무 시작
+                                                                                        요청
+                                                                                    </div>
+                                                                                    <h5 class="mt-3">수행 방법</h5>
+                                                                                    <ul class="ps-3">
+                                                                                        <li class="">메일 작성
+                                                                                            <br>1. 메일 제목 : "RPA_XXX"
+                                                                                            <mark>특정 값</mark>
+                                                                                            포함된 제목
+                                                                                            <br>2. 첨부 파일 (필요한 경우)
+                                                                                        </li>
+                                                                                        <li class="">RPA Bot 계정으로 메일
+                                                                                            발송
+                                                                                        </li>
+                                                                                        <li class="">RPA 요청 메일 수신 확인 후
+                                                                                            업무 시작
+                                                                                        </li>
+                                                                                    </ul>
+
+
+                                                                                    <br>
+                                                                                    <hr>
+                                                                                    <br>
+
+                                                                                    <div class="row">
+                                                                                        <div class="col-12">
+                                                                                            <div class="timeline"
+                                                                                                 dir="ltr"
+                                                                                                 style="font-size: 11px;">
+
+                                                                                                <div class="timeline-show mb-3 text-center">
+                                                                                                    <h5 class="m-0 time-show-name"
+                                                                                                        style="font-size: 13px; background-color: #FFF2CC;">
+                                                                                                        담당자가 RPA로 메일
+                                                                                                        발송</h5>
+                                                                                                </div>
+
+                                                                                                <div class="timeline-show mb-3 text-center">
+                                                                                                    <h5 class="m-0 time-show-name"
+                                                                                                        style="font-size: 13px;">
+                                                                                                        RPA 수행
+                                                                                                        시작</h5>
+                                                                                                </div>
+
+
+                                                                                                <div class="timeline-lg-item timeline-item-left">
+                                                                                                    <div class="timeline-desk">
+                                                                                                        <div class="timeline-box">
+                                                                                                            <span class="arrow-alt"></span>
+                                                                                                            <span class="timeline-icon"><i
+                                                                                                                    class="mdi mdi-adjust"></i></span>
+                                                                                                            <h4 class="mt-0 mb-1 font-11">
+                                                                                                                시스템
+                                                                                                                접속</h4>
+                                                                                                            <p>Excel
+                                                                                                                다운로드</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+
+                                                                                                <div class="timeline-lg-item timeline-item-right">
+                                                                                                    <div class="timeline-desk">
+                                                                                                        <div class="timeline-box">
+                                                                                                            <span class="arrow"></span>
+                                                                                                            <span class="timeline-icon"><i
+                                                                                                                    class="mdi mdi-adjust"></i></span>
+                                                                                                            <h4 class="mt-0 mb-1 font-11">
+                                                                                                                Excel
+                                                                                                                가공</h4>
+                                                                                                            <p>보고서
+                                                                                                                생성</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+
+
+                                                                                                <div class="timeline-lg-item timeline-item-left">
+                                                                                                    <div class="timeline-desk">
+                                                                                                        <div class="timeline-box">
+                                                                                                            <span class="arrow-alt"></span>
+                                                                                                            <span class="timeline-icon"><i
+                                                                                                                    class="mdi mdi-adjust"></i></span>
+                                                                                                            <h4 class="mt-0 mb-1 font-11">
+                                                                                                                RPA 메일
+                                                                                                                발송
+                                                                                                            </h4>
+                                                                                                            <p>보고서
+                                                                                                                발송</p>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                <div class="timeline-show my-3 text-center">
+                                                                                                    <h5 class="m-0 time-show-name"
+                                                                                                        style="font-size: 13px;">
+                                                                                                        RPA 수행 완료</h5>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <!-- end timeline -->
+                                                                                        </div> <!-- end col -->
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                                        <input class="form-check-input me-1"
+                                                                               type="radio"
+                                                                               name="listGroupRadio" value=""
+                                                                               id="thirdRadio">
+                                                                        <label class="form-check-label"
+                                                                               for="thirdRadio">둘 다
+                                                                        </label>
+                                                                        <div>
+                                                                            <i class="ri-information-line"
+                                                                               type="button"
+                                                                               data-bs-toggle="offcanvas"
+                                                                               data-bs-target="#offcanvasRight1"
+                                                                               aria-controls="offcanvasRight1"
+                                                                               style="font-size: 17px; display: None;"></i>
+                                                                        </div>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-info"
+                                                                    data-bs-dismiss="modal"
+                                                                    id="saverpamethod">저장
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p id="rpamethod_text">{{ rpamethod }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+                                            <h5>
+                                                <a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                                   data-bs-toggle="modal" data-bs-target="#totalmng-modal">
+                                                    총 작업 인원
+                                                </a>
+                                            </h5>
+                                            <div id="totalmng-modal" class="modal fade" tabindex="-1" role="dialog"
+                                                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title" id="totalmng-modalLabel">총 작업 인원</h4>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-hidden="true"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <input type="number" id="simpleinput1" class="form-control">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-info"
+                                                                    id="savertotalmng">저장
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p id="manager_amount_text">{{ manager_amount }}명</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-4">
+                                            <h5>
+                                                <a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                                   data-bs-toggle="modal" data-bs-target="#permin-modal">
+                                                    인당 작업 시간
+                                                </a>
+                                            </h5>
+                                            <div id="permin-modal" class="modal fade" tabindex="-1" role="dialog"
+                                                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title" id="permin-modalLabel">인당 작업 시간</h4>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-hidden="true"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="mb-3">
+                                                                <input type="number" id="simpleinput2"
+                                                                       class="form-control">
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-info"
+                                                                    id="saverpermin">저장
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p id="permin_text">{{ permin }}min</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <h5><a class="link-secondary link-offset-2 link-opacity-50-hover" href="#"
+                                           data-bs-toggle="modal" data-bs-target="#modal-lg-mailedit" id="mailcc">메일
+                                        수신 리스트</a></h5>
+                                    <div class="modal fade" id="modal-lg-mailedit" tabindex="-1" role="dialog"
+                                         aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title" id="myLargeModalLabel">메일 수신 설정</h4>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-hidden="true"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="row" data-plugin="dragula"
+                                                         data-containers='["company-list-left", "company-list-right"]'>
+                                                        <div class="col-md-6">
+                                                            <div class="bg-dragula p-2 p-lg-4">
+
+                                                                <h5 class="mt-0">받는 사람 To
+                                                                    <i class="ri-add-line float-end"
+                                                                       style="font-size: 20px;" id="addMail_To"></i>
+                                                                    <div class="spinner-border float-end" role="status"
+                                                                         id="spinner_l"
+                                                                         style="font-size: 7px; height: 15px; width: 15px;"
+                                                                         data-bs-toggle="tooltip"
+                                                                         data-bs-title="임직원 정보 불러오는 중"></div>
+                                                                </h5>
+                                                                <div class="scrollable-content"
+                                                                     style="max-height: 550px; overflow-y: auto;">
+                                                                    <div id="company-list-left" class="py-2">
+                                                                        {% for sto in mailto_df.itertuples %}
+                                                                        <div class="card mb-0 mt-2 custom-card">
+                                                                            <div class="card-body p-3">
+                                                                            <span class="float-end"
+                                                                                  style="font-size: 20px;"
+                                                                                  onclick="removeCard(this)"><i
+                                                                                    class="ri-close-fill"></i></span>
+                                                                                <div class="d-flex align-items-start">
+                                                                                    <div class="w-100 overflow-hidden">
+                                                                                        <h5 class="mb-1 mt-0">
+                                                                                           {{ sto.name }}</h5>
+                                                                                        <small>{{ sto.email }}</small>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endfor %}
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="bg-dragula p-2 p-lg-4">
+
+                                                                <h5 class="mt-0">참조 CC
+                                                                    <i class="ri-add-line"
+                                                                       style="font-size: 20px; float: right;"
+                                                                       id="addMail_CC"></i>
+                                                                    <div class="spinner-border float-end" role="status"
+                                                                         id="spinner_r"
+                                                                         style="font-size: 7px; height: 15px; width: 15px;"
+                                                                         data-bs-toggle="tooltip"
+                                                                         data-bs-title="임직원 정보 불러오는 중"></div>
+                                                                </h5>
+
+                                                                <div class="scrollable-content"
+                                                                     style="max-height: 550px; overflow-y: auto;">
+                                                                    <div id="company-list-right" class="py-2"
+                                                                         style="position: relative;">
+                                                                        {% for sto in mailcc_df.itertuples %}
+                                                                        <div class="card mb-0 mt-2 custom-card">
+                                                                            <div class="card-body p-3">
+                                                                    <span class="float-end"
+                                                                          style="font-size: 20px;"
+                                                                          onclick="removeCard(this)"><i
+                                                                            class="ri-close-fill"></i></span>
+                                                                                <div class="d-flex align-items-start">
+                                                                                    <div class="w-100 overflow-hidden">
+                                                                                        <h5 class="mb-1 mt-0">
+                                                                                           {{ sto.name }}</h5>
+                                                                                        <small>{{ sto.email }}</small>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-info" id="savemaillist">
+                                                        저장
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br><br>
+
+                                    <div class="row">
+
+                                        <div class="col-md-6">
+                                            <div class="md-6">
+
+                                                <div class="card border-secondary border">
+                                                    <div class="card-body" id="mailto-span">
+
+                                                        <h5 class="card-title">받는 사람 <small
+                                                                class="text-muted">TO</small></h5>
+                                                        <hr>
+                                                        {% for sto in mailto_df.itertuples %}
+                                                        <span type="button" class="badge bg-primary"
+                                                              data-bs-toggle="tooltip"
+                                                              data-bs-placement="top"
+                                                              data-bs-title="{{ sto.email }}"
+                                                        style="font-size: 13px">
+                                                        {{ sto.name }}
+                                                        </span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-6">
+                                                <div class="card border-secondary border">
+                                                    <div class="card-body" id="mailcc-span">
+
+                                                        <h5 class="card-title">참조 <small class="text-muted">CC</small>
+                                                        </h5>
+
+                                                        <hr>
+                                                        {% for scc in mailcc_df.itertuples %}
+                                                        <span type="button" class="badge badge-info-lighten"
+                                                              data-bs-toggle="tooltip"
+                                                              data-bs-placement="top"
+                                                              data-bs-title="{{ scc.email }}"
+                                                        style="font-size: 13px">
+                                                                {{ scc.name }}
+                                                            </span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="mt-0 mb-3">Comments</h4>
+                                <textarea class="form-control form-control-light mb-2" placeholder="작성"
+                                          id="example-textarea" rows="3"></textarea>
+                                <div class="text-end">
+                                    <!--                                    <div class="btn-group mb-2">-->
+                                    <!--                                        <button type="button" class="btn btn-link btn-sm text-muted font-18"><i-->
+                                    <!--                                                class="ri-attachment-2"></i></button>-->
+                                    <!--                                    </div>-->
+                                    <div class="btn-group mb-2 ms-2">
+                                        <button id="submitMsg" type="button" class="btn btn-primary btn-sm">등록
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="scrollable-content" style="max-height: 500px; overflow-y: auto;">
+                                <div class="commentArea">
+                                    {% for coms in comments_info %}
+                                    <div class="comment" id="{{ coms.comment_id }}">
+                                        <hr>
+                                        <div class="d-flex align-items mt-2">
+                                            <div class="w-100 overflow-hidden">
+                                                {% if EMPNO in coms.empno %}
+                                                <i class="ri-close-fill" style="font-size: 20px; float: right;"
+                                                   onclick="removecomment(this)"></i>
+
+                                                <i class="mdi mdi-file-document-edit-outline"
+                                                   style="font-size: 20px; float: right; display: inline;"
+                                                   id="edit{{ coms.comment_id }}"
+                                                   onclick="editcomm_convert(this)"
+                                                ></i>
+                                                <i class="ri-check-line"
+                                                   style="font-size: 20px; float: right; display: none;"
+                                                   id="check{{ coms.comment_id }}"
+                                                   onclick="editcomm_done(this)"
+                                                ></i>
+                                                {% endif %}
+                                                <h5 class="mt-0">{{ coms.NAME_KO }} | {{ coms.PART_NM }}</h5>
+                                                <a style="font-size: 13px;" id="comm_body{{ coms.comment_id }}">{{ coms.comment|linebreaks }}</a>
+                                                {% if coms.created_date != coms.updated_date %}
+                                                <a style="font-size: 12px; float: right;">&nbsp;&nbsp; *수정 {{ coms.updated_date|date:'Y.m.d H:i' }}</a>
+                                                {% endif %}
+                                                <a style="font-size: 12px; float: right;">*최초 {{ coms.created_date|date:'Y.m.d H:i' }}</a>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                </div>
+
+                            </div> <!-- end card-body-->
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-xxl-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">RPA 수행 단계
+                                    {% if 'AD' in bAdmin %}
+                                <i class="mdi mdi-square-edit-outline float-end"
+                                   type="button" style="display: inline;"
+                                   data-bs-toggle="modal"
+                                   data-bs-target="#bs-example-modal-lg{{ taskid }}"
+                                ></i>
+                                    {% endif %}
+                                </h5>
+
+                                <div class="scrollable-content" style="max-height: 350px; overflow-y: auto;">
+                                    <ol id="progresslist">
+                                    </ol>
+                                </div>
+                                <!--                                <div dir="ltr">-->
+                                <!--                                    <div class="mt-3 chartjs-chart" style="height: 320px;">-->
+                                <!--                                        <canvas id="line-chart-example"></canvas>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
+                            </div>
+                        </div>
+                        <!-- end card-->
+
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">파일 자료</h5>
+                                <form action="/uploadfiles_task_indi/" method="post" class="dropzone" style="max-height: 10%; width: auto;"
+                                      id="my-dropzone-element-id"
+                                      data-plugin="dropzone" data-previews-container="#file-previews"
+                                      data-upload-preview-template="#uploadPreviewTemplate">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="custom_value" value="{{ pk_data }}|{{ taskid }}">
+                                    <div class="fallback">
+                                        <input name="file" type="file" multiple/>
+                                    </div>
+                                    <div class="dz-message needsclick">
+                                        <i class="h1 text-muted ri-upload-cloud-2-line"></i>
+                                        <h3>파일 첨부</h3>
+                                    </div>
+                                </form>
+
+                                <div class="dropzone-previews mt-3" id="file-previews"></div>
+                                <div class="d-none" id="uploadPreviewTemplate">
+                                    <div class="card mt-1 mb-0 shadow-none border">
+                                        <div class="p-2">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <img data-dz-thumbnail src="#"
+                                                         class="avatar-sm rounded bg-light" alt="">
+                                                </div>
+                                                <div class="col ps-0">
+                                                    <a href="javascript:void(0);"
+                                                       class="text-muted fw-bold"
+                                                       data-dz-name download></a>
+                                                    <p class="mb-0" data-dz-size></p>
+                                                </div>
+                                                <div class="col-auto">
+                                                    <a
+                                                            class="btn btn-link btn-lg text-muted"
+                                                            data-dz-remove>
+                                                        <i class="ri-close-line"
+                                                           onclick="myFunction(event)"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="line-height:170%; font-size:4px;">
+                                    &nbsp;<br></div>
+                                {% for files in filedata %}
+
+                                <div class="card mt-1 mb-0 shadow-none border">
+                                    <div class="p-2">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <div class="avatar-sm">
+                                                    {% if '.xls' in files.filename %}
+                                                        <img data-dz-thumbnail src="{% static 'assets/images/excel.PNG' %}"
+                                                        class="avatar-sm rounded bg-light" alt>
+                                                    {% elif '.ppt' in files.filename %}
+                                                        <img data-dz-thumbnail src="{% static 'assets/images/ppt.PNG' %}"
+                                                        class="avatar-sm rounded bg-light" alt>
+                                                    {% elif '.txt' in files.filename %}
+                                                        <img data-dz-thumbnail src="{% static 'assets/images/txt.PNG' %}"
+                                                        class="avatar-sm rounded bg-light" alt>
+                                                    {% elif '.pdf' in files.filename %}
+                                                        <img data-dz-thumbnail src="{% static 'assets/images/pdf.PNG' %}"
+                                                        class="avatar-sm rounded bg-light" alt>
+                                                    {% elif '.doc' in files.filename %}
+                                                        <img data-dz-thumbnail src="{% static 'assets/images/word.PNG' %}"
+                                                        class="avatar-sm rounded bg-light" alt>
+                                                    {% elif '.png' in files.filename or '.jpg' in files.filename %}
+                                                        <img data-dz-thumbnail src="{{ base_dir }}/{{ files.file }}"
+                                                        class="avatar-sm rounded bg-light" alt>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col ps-0">
+                                                <a href="{{ base_dir }}/{{ files.file }}"
+                                                   class="text-muted fw-bold" data-dz-name download>{{ files.filename }}</a>
+                                                <p class="mb-0">{{ files.filesize }}</p>
+                                            </div>
+                                            <div class="col-auto">
+                                                <a
+                                                            class="btn btn-link btn-lg text-muted"
+                                                            data-dz-remove>
+                                                        <i class="ri-close-line"
+                                                           onclick="myFunction(event)"></i>
+                                                    </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+
+                                <!--                                                                <div class="card mb-0 shadow-none border">-->
+                                <!--                                                                    <div class="p-2">-->
+                                <!--                                                                        <div class="row align-items-center">-->
+                                <!--                                                                            <div class="col-auto">-->
+                                <!--                                                                                <div class="avatar-sm">-->
+                                <!--                                                                                            <span class="avatar-title text-bg-secondary rounded">-->
+                                <!--                                                                                                .MP4-->
+                                <!--                                                                                            </span>-->
+                                <!--                                                                                </div>-->
+                                <!--                                                                            </div>-->
+                                <!--                                                                            <div class="col ps-0">-->
+                                <!--                                                                                <a href="javascript:void(0);" class="text-muted fw-bold">Admin-bug-report.mp4</a>-->
+                                <!--                                                                                <p class="mb-0">7.05 MB</p>-->
+                                <!--                                                                            </div>-->
+                                <!--                                                                            <div class="col-auto">-->
+                                <!--                                                                                <a href="javascript:void(0);" class="btn btn-link btn-lg text-muted">-->
+                                <!--                                                                                    <i class="ri-download-2-line"></i>-->
+                                <!--                                                                                </a>-->
+                                <!--                                                                            </div>-->
+                                <!--                                                                        </div>-->
+                                <!--                                                                    </div>-->
+                                <!--                                                                </div>-->
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="comment-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="comment-modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">확인</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                    </div>
+                    <div class="modal-body">
+                        삭제 하시겠습니까?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">취소</button>
+                        <button type="button" class="btn btn-danger">삭제</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="bs-example-modal-lg{{ taskid }}"
+         tabindex="3"
+         role="dialog" aria-labelledby="myLargeModalLabel{{ taskid }}"
+         aria-hidden="true" data-bs-backdrop="static"
+         data-bs-keyboard="false">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"
+                            id="myLargeModalLabel{{ taskid }}">
+                            {{ taskname }} </h4>&nbsp;&nbsp; <small style="text-align:left">
+                        {{ taskid }}</small>
+                        <button type="button" class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-hidden="true"></button>
+                    </div>
+                    <div class="modal-body" style="text-align:left">
+                        <div class="mt-2">
+                            <label class="form-label">업무 설계</label>
+                            <div class="row" data-plugin="dragula"
+                                 data-containers='["handle-dragula-left{{ taskid }}", "handle-dragula-right"]'
+                                 data-handleClass="dragula-handle">
+                                <div class="col-md-12">
+
+                                    <div class="bg-dragula p-2 p-lg-4" id="progresslist{{ taskid }}">
+                                        <p class="mt-0" style="font-size: 16px;">
+                                            RPA 개발 단계
+                                            <i class="ri ri-add-box-line " id="insertnewline" onclick="addjob({{ taskid }});"
+                                               style="float: right;"></i>
+                                        </p>
+
+                                        <div class="scrollable-content" style="max-height: 400px; overflow-y: auto;">
+                                            <div id="handle-dragula-left{{ taskid }}" class="py-2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="btnsave{{ taskid }}" type="button" class="btn btn-primary" onclick="updatetaskstatus({{ taskid }});">
+                            저장
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include 'page/footer_bottom.html' %}
+    </div>
+
+</div>
+<!-- END wrapper -->
+
+<!-- Vendor js -->
+<script src="{% static 'assets/js/vendor.min.js' %}"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- Select2 js  -->
+<script src="{% static 'assets/vendor/select2/js/select2.min.js' %}"></script>
+<!-- Chart.js -->
+<script src="{% static 'assets/vendor/chart.js/chart.min.js' %}"></script>
+<!-- Dropzone File Upload js -->
+<script src="{% static 'assets/vendor/dropzone/min/dropzone.min.js' %}"></script>
+<!-- Handlebars -->
+<script src="{% static 'assets/vendor/handlebars/handlebars.min.js' %}"></script>
+<!-- Typeahead -->
+<script src="{% static 'assets/vendor/typeahead.js/typeahead.bundle.min.js' %}"></script>
+<!-- Dragula -->
+<script src="{% static 'assets/vendor/dragula/dragula.min.js' %}"></script>
+<!-- Product Details Demo App js -->
+<script src="{% static 'assets/js/pages/demo.project-detail.js' %}"></script>
+<!-- File Upload Plugin js -->
+<script src="{% static 'assets/js/ui/component.fileupload.js' %}"></script>
+<!-- Dragula Demo js -->
+<script src="{% static 'assets/js/ui/component.dragula.js' %}"></script>
+<!-- App js -->
+<script src="{% static 'assets/js/app.min.js' %}"></script>
+<script>
+
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+
+</script>
+<script src="{% static 'assets/js/pages/demo.typehead.js' %}"></script>
+<script src="{% static 'assets/vendor/jquery-toast-plugin/jquery.toast.min.js' %}"></script>
+<!-- Toastr Demo js -->
+<script src="{% static 'assets/js/pages/demo.toastr.js' %}"></script>
+
+<!-- 메일 정보 가져오기 (input에 조회 시 나오는 직원 정보) && modal 기본 정보 Setting -->
+<script>
+$(document).ready(function () {
+    var hasLoadedEmployeeOptions = false;
+    var addLineIcon_l = document.getElementById('addMail_To');
+    var addLineIcon_r = document.getElementById('addMail_CC');
+    var spinnerBorder_l = document.getElementById('spinner_l');
+    var spinnerBorder_r = document.getElementById('spinner_r');
+    var spinnerBorder_o = document.getElementById('spinner_overview');
+
+    addLineIcon_l.style.display = 'none';
+    addLineIcon_r.style.display = 'none';
+    spinnerBorder_l.style.display = 'block';
+    spinnerBorder_r.style.display = 'block';
+
+    var managerlist_empno = JSON.parse('{{ managerlist_empno|escapejs }}');
+    var managerlist_empnoString = JSON.stringify(managerlist_empno);
+
+    function loadEmployeeOptions() {
+        if (hasLoadedEmployeeOptions) {
+            return;
+        }
+        hasLoadedEmployeeOptions = true;
+
+        var pId = document.getElementById("taskid").innerText;
+        var dataToSend = {
+            pId: pId
+        };
+
+        $.ajax({
+            type: 'POST',
+            data: dataToSend,
+            url: '/getAllEmp/',
+            headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+            success: function (response) {
+                var select = document.getElementById("mySelect_type");
+                while (select.options.length > 0) {
+                    select.remove(0);
+                }
+
+                jsonDataArray = [];
+                var results = JSON.parse(response.Emp_json);
+
+                for (var i = 0; i < results.length; i++) {
+                    var result = results[i];
+                    var select = document.getElementById("mySelect_type");
+
+                    var newOption = document.createElement("option");
+
+                    newOption.value = result.EMPNO;
+                    newOption.innerText = result.NAME_KO + " | " + result.NAME_EN;
+                    newOption.title = result.NAME_KO + " | " + result.CLNM + " | " + result.CO_NM + " | " + result.NAME_EN;
+
+                    if (managerlist_empnoString.includes(result.EMPNO)) {
+                        newOption.selected = true;
+                    }
+
+                    select.appendChild(newOption);
+
+                    var jsonObject = {
+                        "value": result.NAME_KO,
+                        "EMAIL": result.EMAIL,
+                        "CLNM": result.CLNM,
+                        "tokens": [result.NAME_KO, result.EMAIL]
+                    };
+                    jsonDataArray.push(jsonObject);
+                }
+                initializeTypeahead(jsonDataArray)
+                addLineIcon_l.style.display = 'block';
+                addLineIcon_r.style.display = 'block';
+                spinnerBorder_l.style.display = 'none';
+                spinnerBorder_r.style.display = 'none';
+                spinnerBorder_o.style.display = 'none';
+
+                var task_g1 = response.task_g1;
+                var results = JSON.parse(response.task_g1_master_json);
+
+                for (var i = 0; i < results.length; i++) {
+                    var result = results[i];
+                    var select2 = document.getElementById("mySelect_type2");
+                    var newOption = document.createElement("option");
+                    newOption.value = result.contents;
+                    newOption.innerText = result.contents;
+
+                    if (task_g1.includes(result.contents)) {
+                        newOption.selected = true;
+                    }
+                    select2.appendChild(newOption);
+                }
+
+                var task_g2 = response.task_g2;
+                var results = JSON.parse(response.task_g2_master_json);
+
+                for (var i = 0; i < results.length; i++) {
+                    var result = results[i];
+                    var select3 = document.getElementById("mySelect_type3");
+                    var newOption = document.createElement("option");
+                    newOption.value = result.contents;
+                    newOption.innerText = result.contents;
+
+                    if (task_g2.includes(result.contents)) {
+                        newOption.selected = true;
+                    }
+                    select3.appendChild(newOption);
+                    }
+                    document.getElementById("bizgrp").value = "{{ biztype }}";
+
+                    var checkbox1 = document.querySelector("#firstRadio")
+                    var checkbox2 = document.querySelector("#secondRadio")
+                    var checkbox3 = document.querySelector("#thirdRadio")
+                    if ('{{ rpamethod }}' === 'Schedule') {
+                        checkbox1.checked = true;
+                    } else if ('{{ rpamethod }}' === 'Trigger') {
+                        checkbox2.checked = true;
+                    } else {
+                        checkbox3.checked = true;
+                    }
+
+                    document.querySelector("#simpleinput1").value = '{{ manager_amount }}';
+                    document.querySelector("#simpleinput2").value = '{{ permin }}';
+
+
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+    }
+
+    window.onload = function () {
+        loadEmployeeOptions();
+    };
+
+
+
+});
+
+
+
+</script>
+<script>
+  $(function () {
+    $('.modal-dialog').draggable({
+      handle: ".modal-header"
+    });
+  });
+
+</script>
+<!-- 메일 List 임직원 정보 가져오기 -->
+<script>
+function generateKey(length) {
+    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let randomString = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        randomString += characters.charAt(randomIndex);
+    }
+    return randomString;
+}
+
+var pkid;
+
+var addMailToIcon = document.getElementById('addMail_To');
+var addMailCCIcon = document.getElementById('addMail_CC');
+
+addMailToIcon.addEventListener('click', function() {
+    pkid = addList_To();
+    initializeTypeahead(jsonDataArray, pkid);
+});
+
+addMailCCIcon.addEventListener('click', function() {
+    pkid = addList_CC();
+    initializeTypeahead(jsonDataArray, pkid);
+});
+
+function addList_To() {
+    pkid = generateKey(20);
+    var newHtml = `
+     <div class="card mb-0 mt-2 new-card" style="background-color: #FFF8E7;">
+        <div class="card-body p-3">
+            <i class="ri-close-fill float-end" style="font-size: 20px;" onclick="removeCard(this)"></i>
+            <div class="d-flex align-items-start">
+                <div class="w-100">
+                    <br>
+                    <div class="mb-2"> <!-- Reduce the margin-bottom here -->
+                        <label class="form-label">이름</label>
+                        <input id="custom${pkid}" class="custom-templates form-control" type="text" placeholder="검색">
+                    </div>
+                    <div class="mb-2"> <!-- Reduce the margin-bottom here -->
+                        <label for="example-email" class="form-label">메일 주소</label>
+                        <input type="email" id="email${pkid}" name="example-email" class="form-control" placeholder="Email">
+                    </div>
+                </div>
+            </div>
+            <i class="ri-check-line align-self-start float-end" style="font-size: 20px; margin-top: 5px;" onclick="checknew(event, '${pkid}')"></i>
+        </div>
+    </div>
+  `;
+    var handleDragulaLeft = document.getElementById("company-list-left");
+
+    var tempDiv = document.createElement("div");
+    tempDiv.innerHTML = newHtml;
+
+    while (tempDiv.firstChild) {
+        handleDragulaLeft.appendChild(tempDiv.firstChild);
+    }
+    return pkid;
+}
+
+function addList_CC() {
+    pkid = generateKey(20);
+    var newHtml = `
+     <div class="card mb-0 mt-2 new-card" style="background-color: #FFF8E7;">
+        <div class="card-body p-3">
+            <i class="ri-close-fill float-end" style="font-size: 20px;" onclick="removeCard(this)"></i>
+            <div class="d-flex align-items-start">
+                <div class="w-100">
+                    <br>
+                    <div class="mb-2"> <!-- Reduce the margin-bottom here -->
+                        <label class="form-label">이름</label>
+                        <input id="custom${pkid}" class="custom-templates form-control" type="text" placeholder="검색">
+                    </div>
+                    <div class="mb-2"> <!-- Reduce the margin-bottom here -->
+                        <label for="example-email" class="form-label">메일 주소</label>
+                        <input type="email" id="email${pkid}" name="example-email" class="form-control" placeholder="Email">
+                    </div>
+                </div>
+            </div>
+            <i class="ri-check-line align-self-start float-end" style="font-size: 20px; margin-top: 5px;" onclick="checknew(event, '${pkid}')"></i>
+        </div>
+    </div>
+  `;
+    var handleDragulaLeft = document.getElementById("company-list-right");
+
+    var tempDiv = document.createElement("div");
+    tempDiv.innerHTML = newHtml;
+
+    while (tempDiv.firstChild) {
+        handleDragulaLeft.appendChild(tempDiv.firstChild);
+    }
+    return pkid;
+}
+
+function checknew(event, id) {
+    var strName = document.querySelector("#custom" + id).value;
+    var strEmail = document.querySelector("#email" + id).value;
+
+    event.preventDefault();
+    var cardBody = event.target.closest('.card-body.p-3');
+
+    if (!strName || !strEmail) {
+        warningnotification_valid();
+        return;
+    }
+
+    var emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+    if (!emailRegex.test(strEmail)) {
+        warningnotification_mail();
+        return;
+    }
+
+    if (cardBody) {
+        while (cardBody.firstChild) {
+            cardBody.removeChild(cardBody.firstChild);
+        }
+
+        var newHTML = `
+                <span class="float-end" style="font-size: 20px;">
+                    <i class="ri-close-fill" onclick="removeCard(this)"></i>
+                </span>
+                <div class="d-flex align-items-start">
+                    <div class="w-100 overflow-hidden">
+                        <h5 class="mb-1 mt-0">${strName}</h5>
+                        <small>${strEmail}</small>
+                    </div>
+                </div>
+        `;
+        cardBody.innerHTML = newHTML;
+    }
+}
+
+</script>
+<script>
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('tt-suggestion') && event.target.classList.contains('tt-selectable')) {
+        handleSuggestionClick(event);
+    }
+});
+
+var entertitleValue = null;
+var sourceElementId = null;
+var sourceElementId_remove = null;
+
+document.addEventListener('keydown', function(event) {
+    if (event.target.classList.contains('custom-templates') && event.target.classList.contains('form-control')) {
+        var elementWithClass = document.querySelector('.tt-suggestion.tt-selectable.tt-cursor');
+        if (elementWithClass) {
+            entertitleValue = elementWithClass.getAttribute('title');
+            sourceElementId = event.target.id;
+            sourceElementId_remove = sourceElementId.replace('custom', '');
+        }
+        if (event.key === 'Enter') {
+        handleSuggestionClick(event, entertitleValue, sourceElementId_remove);
+    }
+    }
+});
+
+function handleSuggestionClick(event, entertitleValue, sourceElementId) {
+    if (event.type === 'click') {
+        titleValue = event.target.getAttribute('title');
+        var strmail = titleValue;
+        var strmailinputid = getEmailInputId(event);
+        document.querySelector("#" + strmailinputid).value = strmail;
+    }
+    if (event.key === 'Enter') {
+        titleValue = entertitleValue;
+        document.querySelector("#email" + sourceElementId).value = entertitleValue;
+        return;
+    }
+}
+
+
+function getEmailInputId(event) {
+    var clickedElement = event.target;
+
+    var cardBodyElement = findClosestParentByClassName(clickedElement, 'card-body');
+    if (cardBodyElement) {
+        var emailInput = cardBodyElement.querySelector('input[type="email"]');
+
+        if (emailInput) {
+            var emailInputId = emailInput.id;
+            return emailInputId;
+        }
+    }
+}
+
+
+document.addEventListener('click', getEmailInputId);
+
+function findClosestParentByClassName(element, className) {
+    while (element && !element.classList.contains(className)) {
+        element = element.parentElement;
+    }
+    return element;
+}
+
+
+
+function removeCard(iconElement) {
+  var card = iconElement.closest('.card');
+
+  if (card) {
+    card.remove();
+  }
+}
+</script>
+<script>
+var detailInfo = {{ detailinfojson|safe }};
+
+for (var i = 0; i < detailInfo.length; i++) {
+  var counter = 0;
+  var jsonString = detailInfo[i].fields.progress_job;
+  var jsonString_done = detailInfo[i].fields.progress_job_done;
+  var arr = JSON.parse(jsonString);
+  var arrDone = JSON.parse(jsonString_done);
+  var totalItemCount = arrDone.length;
+  var yCount = 0;
+
+  arr.forEach(function(item) {
+    var isChecked = false;
+    var strProgress = arr[counter]
+    var chkboolean = arrDone[counter];
+    if (chkboolean == 'Y') {
+      var isChecked = true;
+    }
+
+    var newHtml = `
+        <li>
+            ${strProgress}
+        </li>
+    `;
+    counter++;
+
+    var handleDragulaLeft = document.getElementById("progresslist");
+
+    var tempDiv = document.createElement("li");
+    tempDiv.innerHTML = newHtml;
+
+    while (tempDiv.firstChild) {
+      handleDragulaLeft.appendChild(tempDiv.firstChild);
+    }
+  });
+}
+
+function warningnotification_valid() {
+    $.NotificationApp.send("오류","필수값이 누락되었습니다","top-right","Background color","error")
+}
+
+function warningnotification_mail() {
+    $.NotificationApp.send("오류","메일 형식이 맞지 않습니다","top-right","Background color","error")
+}
+
+
+function warningnotification_notallowed() {
+    $.NotificationApp.send("오류","작업을 완료해주세요","top-right","Background color","error")
+}
+
+function warningnotification_comment() {
+    $.NotificationApp.send("오류","입력된 값이 없습니다","top-right","Background color","error")
+}
+
+
+function getCurrentDateTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    return `${year}.${month}.${day} ${hours}:${minutes}`;
+}
+
+</script>
+<!-- 메일 List 수정 post -->
+<script>
+
+$(document).ready(function () {
+    $('[id^="savemaillist"]').click(function () {
+    var elementsWithClass = document.getElementsByClassName("twitter-typeahead");
+    if (elementsWithClass.length > 0) {
+        warningnotification_notallowed();
+        return;
+    }
+
+        var pId = document.getElementById("taskid").innerText;
+
+        var companyListLeft = document.getElementById("company-list-left");
+        var cardElements_l = companyListLeft.querySelectorAll(".card.mb-0.mt-2");
+        var jsonArray_l = [];
+
+        var companyListRight = document.getElementById("company-list-right");
+        var cardElements_r = companyListRight.querySelectorAll(".card.mb-0.mt-2");
+        var jsonArray_r = [];
+
+        cardElements_l.forEach(function(cardElement) {
+          var cardBody = cardElement.querySelector(".card-body.p-3");
+          var dFlexElement = cardBody.querySelector(".d-flex.align-items-start");
+          var innerText_name = dFlexElement.querySelector("h5").innerText;
+          var innerText_email = dFlexElement.querySelector("small").innerText;
+            if (innerText_name && innerText_email) {
+                var jsonObj = {
+                    "name": innerText_name,
+                    "email": innerText_email
+                };
+
+                jsonArray_l.push(jsonObj);
+            }
+        });
+
+        cardElements_r.forEach(function(cardElement) {
+          var cardBody = cardElement.querySelector(".card-body.p-3");
+          var dFlexElement = cardBody.querySelector(".d-flex.align-items-start");
+          var innerText_name = dFlexElement.querySelector("h5").innerText;
+          var innerText_email = dFlexElement.querySelector("small").innerText;
+            if (innerText_name && innerText_email) {
+                var jsonObj = {
+                    "name": innerText_name,
+                    "email": innerText_email
+                };
+
+                jsonArray_r.push(jsonObj);
+            }
+        });
+
+        var json_mailto = JSON.stringify(jsonArray_l, null, 0);
+        var json_mailcc = JSON.stringify(jsonArray_r, null, 0);
+        var EMPNO = '{{ EMPNO }}'
+        var NAME_KO = '{{ NAME_KO }}'
+        var dataToSend = {
+            pId: pId,
+            json_mailto: json_mailto,
+            json_mailcc: json_mailcc,
+            EMPNO: EMPNO,
+            NAME_KO: NAME_KO
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/updatemaillist/',
+            data: dataToSend,
+            headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+            success: function (response) {
+                var parsedArray = JSON.parse(json_mailto);
+                var handleDragulaLeft = document.getElementById("mailto-span");
+
+                var buttonsToRemove = handleDragulaLeft.querySelectorAll('span[type="button"]');
+                buttonsToRemove.forEach(function(element) {
+                    element.remove();
+                });
+
+                parsedArray.forEach(function(item, i) {
+                    var name = item.name;
+                    var email = item.email;
+
+                    var newHtml = `
+                        <span
+                            type="button"
+                            class="badge bg-primary"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            style="font-size: 13px;"
+                            data-bs-title="${email}">
+                            ${name}
+                        </span>
+                    `;
+
+
+                    var handleDragulaLeft = document.getElementById("mailto-span");
+                    var tempDiv = document.createElement("span");
+                    tempDiv.setAttribute("data-bs-toggle", "tooltip");
+                    tempDiv.innerHTML = newHtml;
+
+                    while (tempDiv.firstChild) {
+                        handleDragulaLeft.appendChild(tempDiv.firstChild);
+                    }
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                });
+
+                var parsedArray = JSON.parse(json_mailcc);
+                var handleDragulaRight = document.getElementById("mailcc-span");
+
+                var buttonsToRemove = handleDragulaRight.querySelectorAll('span[type="button"]');
+                buttonsToRemove.forEach(function(element) {
+                    element.remove();
+                });
+
+                parsedArray.forEach(function(item, i) {
+                    var name = item.name;
+                    var email = item.email;
+
+                    var newHtml = `
+                        <span
+                            type="button"
+                            class="badge badge-info-lighten"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            data-bs-title="${email}"
+                            style="font-size: 13px;">
+                            ${name}
+                        </span>
+                    `;
+
+                    var handleDragulaRight = document.getElementById("mailcc-span");
+                    var tempDiv = document.createElement("span");
+                    tempDiv.setAttribute("data-bs-toggle", "tooltip");
+                    tempDiv.innerHTML = newHtml;
+
+                    while (tempDiv.firstChild) {
+                        handleDragulaRight.appendChild(tempDiv.firstChild);
+                    }
+                    $('[data-bs-toggle="tooltip"]').tooltip();
+                });
+
+            $('#modal-lg-mailedit').modal('toggle');
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+    });
+});
+
+
+</script>
+<!-- 업무 설명 수정 -->
+<script>
+$(document).ready(function () {
+        $('[id^="saveExplanation"]').click(function () {
+
+    var chkelement = document.querySelector("#explanation-textarea").value;
+    if (chkelement === '') {
+        warningnotification_comment();
+        return;
+    }
+
+            var pId = document.getElementById("taskid").innerText;
+            var explanation = document.querySelector("#explanation-textarea").value
+            var dataToSend = {
+                pId: pId,
+                explanation: explanation
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updateexplanation/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                    document.querySelector("#explanation-view").innerText = explanation;
+                    $('#explanation-modal').modal('toggle');
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+
+</script>
+<!-- 과제명 수정  -->
+<script>
+$(document).ready(function () {
+        $('[id^="savetitle"]').click(function () {
+
+    var chkelement = document.querySelector("#titleinput").value;
+    if (chkelement === '') {
+        warningnotification_comment();
+        return;
+    }
+
+            var pId = document.getElementById("taskid").innerText;
+            var dataToSend = {
+                pId: pId,
+                title: chkelement
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updatetitle/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                    document.querySelector("#rpa_taskname").innerText = chkelement;
+                    $('#title-modal').modal('toggle');
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+
+</script>
+<!-- 담당자 수정 -->
+<script>
+$(document).ready(function () {
+        $('[id^="save_managerbtn"]').click(function () {
+            var pId = document.getElementById("taskid").innerText;
+            var container = document.getElementById("select2-mySelect_type-container");
+            var buttons = container.querySelectorAll("button");
+
+            if (buttons.length === 0) {
+                warningnotification_comment();
+                return;
+            }
+
+            var extractedValues = [];
+            buttons.forEach(function(button) {
+              var ariaDescribedByValue = button.getAttribute("aria-describedby");
+
+              var valueToExtract = "SYC";
+              var indexOfSYC = ariaDescribedByValue.indexOf(valueToExtract);
+
+              if (indexOfSYC !== -1) {
+                var extractedValue = ariaDescribedByValue.substring(indexOfSYC + valueToExtract.length);
+                extractedValues.push("SYC" + extractedValue);
+              }
+            });
+
+            const elements = document.querySelectorAll('.select2-selection__choice__display');
+            var extractedValues_name = [];
+            elements.forEach(element => {
+                const value = element.textContent;
+                const parts = value.split("|");
+                const firstItem = parts[0].trim();
+                    if (element.id.includes("SYC")) {
+                        extractedValues_name.push(firstItem);
+                    }
+            });
+            var dataToSend = {
+                pId: pId,
+                extractedValues: JSON.stringify(extractedValues),
+                extractedValues_name: JSON.stringify(extractedValues_name)
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updatemanager/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                    $('#info-header-modal').modal('toggle');
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+
+</script>
+<!-- 댓글 작성/삭제/수정 -->
+<script>
+function editcomm_convert(iconElement) {
+    var comment = iconElement.closest('.comment');
+    var comment_id = comment.id;
+
+    var origin_comm = document.querySelector("#" + comment_id + " > div > div > a:nth-child(5)");
+    var origin_comm_value = origin_comm.innerText;
+
+    var commBodyElement = document.getElementById("comm_body" + comment_id);
+    var textareaElement = document.createElement("textarea");
+    textareaElement.className = "form-control form-control-light mb-2";
+    textareaElement.placeholder = "작성";
+    textareaElement.id = "textarea-edit" + comment_id;
+    textareaElement.rows = 3;
+    textareaElement.value = origin_comm_value;
+    commBodyElement.innerHTML = '';
+    commBodyElement.appendChild(textareaElement);
+
+    var editIcon = document.querySelector("#edit" + comment_id);
+    var checkIcon = document.querySelector("#check" + comment_id);
+
+    editIcon.style.display = "none";
+    checkIcon.style.display = "inline";
+    localStorage.setItem('origin_comm_value', origin_comm_value);
+}
+
+function editcomm_done(iconElement) {
+    var comment = iconElement.closest('.comment');
+    var comment_id = comment.id;
+
+    var written_comm = localStorage.getItem('origin_comm_value');
+    var origin_comm = document.querySelector("#textarea-edit" + comment_id);
+    var origin_comm_value = origin_comm.value;
+    if (written_comm === origin_comm_value) {
+        var commBodyElement = document.getElementById("comm_body" + comment_id);
+        var textareaElement = document.createElement("p");
+        textareaElement.id = "comm_body" + comment_id;
+        textareaElement.innerText = origin_comm_value;
+        commBodyElement.innerHTML = '';
+        commBodyElement.appendChild(textareaElement);
+
+        var editIcon = document.querySelector("#edit" + comment_id);
+        var checkIcon = document.querySelector("#check" + comment_id);
+
+        editIcon.style.display = "inline";
+        checkIcon.style.display = "none";
+        return;
+    }
+    var pkid_comment = comment_id
+    var pId = document.getElementById("taskid").innerText;
+    var edited_comment = origin_comm_value;
+    var department = '{{ team|safe }}';
+        if (origin_comm_value == '') {
+            warningnotification_comment();
+            return;
+        }
+    var dataToSend = {
+        pId: pId,
+        edited_comment: edited_comment,
+        department: department,
+        pkid_comment: pkid_comment
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/editcomment/',
+        data: dataToSend,
+        headers: {
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        },
+        success: function (response) {
+            var commBodyElement = document.getElementById("comm_body" + comment_id);
+            var textareaElement = document.createElement("p");
+            textareaElement.id = "comm_body" + comment_id;
+            textareaElement.innerText = origin_comm_value;
+            commBodyElement.innerHTML = '';
+            commBodyElement.appendChild(textareaElement);
+
+            var editIcon = document.querySelector("#edit" + comment_id);
+            var checkIcon = document.querySelector("#check" + comment_id);
+
+            editIcon.style.display = "inline";
+            checkIcon.style.display = "none";
+        },
+        error: function (error) {
+            console.log('오류 발생: ', error);
+        }
+    });
+
+
+}
+
+function submitMsg(pkid_comment) {
+    var newComm = document.querySelector("#example-textarea").value
+    var formattedValue = newComm.replace(/\n/g, '<br>');
+    const hr = document.createElement("hr");
+
+    const commentSection = document.createElement("div");
+    commentSection.classList.add("comment");
+    commentSection.setAttribute("id", pkid_comment);
+    commentSection.innerHTML = `
+        <hr>
+        <div class="d-flex align-items mt-2">
+            <div class="w-100 overflow-hidden">
+                <i class="ri-close-fill" style="font-size: 20px; float: right;" onclick="removecomment(this)"></i>
+                <i class="mdi mdi-file-document-edit-outline"
+                   style="font-size: 20px; float: right; display: inline;"
+                   id="edit${pkid_comment}"
+                   onclick="editcomm_convert(this)"
+                ></i>
+                <i class="ri-check-line"
+                   style="font-size: 20px; float: right; display: none;"
+                   id="check${pkid_comment}"
+                   onclick="editcomm_done(this)"
+                ></i>
+                <h5 class="mt-0">{{ NAME_KO|safe }} | {{ team|safe }}</h5>
+                <a style="font-size: 13px;" id="comm_body${pkid_comment}">${formattedValue}</a><br>
+                <a style="font-size: 12px; float: right;">${getCurrentDateTime()}</a>
+            </div>
+        </div>
+    `;
+
+    const commentArea = document.querySelector(".commentArea");
+
+    commentArea.insertBefore(commentSection, commentArea.firstChild);
+    document.querySelector("#example-textarea").value = "";
+}
+
+$(document).ready(function () {
+        $('[id^="submitMsg"]').click(function () {
+            var pkid_comment = generateKey(20)
+            var pId = document.getElementById("taskid").innerText;
+            var new_comment = document.querySelector("#example-textarea").value;
+            var managername = '{{ NAME_KO|safe }}';
+            var department = '{{ team|safe }}';
+                if (new_comment == '') {
+                    warningnotification_comment();
+                    return;
+                }
+            var dataToSend = {
+                pId: pId,
+                new_comment: new_comment,
+                managername: managername,
+                department: department,
+                pkid_comment: pkid_comment
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updatecomment/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                    submitMsg(pkid_comment);
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+
+function removecomment(iconElement) {
+    var comment = iconElement.closest('.comment');
+    var comment_id = comment.id;
+
+    var confirmation = window.confirm("삭제하시겠습니까?");
+
+    if (confirmation) {
+        var dataToSend = {
+            comment_id: comment_id
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/removecomment/',
+            data: dataToSend,
+            headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+            success: function (response) {
+                if (comment) {
+                    comment.remove();
+                }
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+    }
+}
+
+
+</script>
+<!-- 사업부 수정 -->
+<script>
+$(document).ready(function () {
+        $('[id^="saveBiztype"]').click(function () {
+            var pId = document.getElementById("taskid").innerText;
+            var bizgrp = document.querySelector("#bizgrp").value;
+
+            var dataToSend = {
+                pId: pId,
+                bizgrp: bizgrp
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updatebiztype/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                    document.querySelector("#biztype_text").innerText = bizgrp;
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+</script>
+<!-- 업무군 수정 -->
+<script>
+$(document).ready(function () {
+        $('[id^="saveG1"]').click(function () {
+            var pId = document.getElementById("taskid").innerText;
+            var container = document.getElementById("select2-mySelect_type2-container");
+            var buttons = container.querySelectorAll("button");
+            if (buttons.length === 0) {
+                warningnotification_comment();
+                return;
+            }
+
+            var lis = container.querySelectorAll("li");
+            var taskgrp1 = [];
+            lis.forEach(function(li) {
+              var titlevalue = li.getAttribute("title");
+              var indexOfSYC = titlevalue.value;
+              if (indexOfSYC !== -1) {
+                var extractedValue = titlevalue;
+                taskgrp1.push(extractedValue);
+              }
+            });
+            var joined_taskgrp1 = taskgrp1.join("/")
+
+            var dataToSend = {
+                pId: pId,
+                joined_taskgrp1: joined_taskgrp1
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updatetaskgrp1/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                var taskgrp1_view = document.getElementById("task_g1_text");
+                taskgrp1_view.innerHTML = "";
+
+                taskgrp1.forEach(function(item) {
+                    var name = item;
+                    var newHtml = `
+                    <span
+                        class="badge bg-info"
+                        style="font-size: 13px;">
+                        ${name}
+                     </span>
+                    `;
+
+                    var taskgrp1_view = document.getElementById("task_g1_text");
+                    var tempDiv = document.createElement("span");
+                    tempDiv.innerHTML = newHtml;
+
+                    while (tempDiv.firstChild) {
+                        taskgrp1_view.appendChild(tempDiv.firstChild);
+                    }
+                    })
+                $('#g1-modal').modal('toggle');
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+</script>
+<!-- 업무 유형 수정 -->
+<script>
+$(document).ready(function () {
+        $('[id^="saveG2"]').click(function () {
+            var pId = document.getElementById("taskid").innerText;
+            var container = document.getElementById("select2-mySelect_type3-container");
+            var buttons = container.querySelectorAll("button");
+            if (buttons.length === 0) {
+                warningnotification_comment();
+                return;
+            }
+
+            var lis = container.querySelectorAll("li");
+            var taskgrp2 = [];
+            lis.forEach(function(li) {
+              var titlevalue = li.getAttribute("title");
+              var indexOfSYC = titlevalue.value;
+              if (indexOfSYC !== -1) {
+                var extractedValue = titlevalue;
+                taskgrp2.push(extractedValue);
+              }
+            });
+            var joined_taskgrp2 = taskgrp2.join("/")
+
+            var dataToSend = {
+                pId: pId,
+                joined_taskgrp2: joined_taskgrp2
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updatetaskgrp2/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                var taskgrp2_view = document.getElementById("task_g2_text");
+                taskgrp2_view.innerHTML = "";
+
+                taskgrp2.forEach(function(item) {
+                    var name = item;
+                    var newHtml = `
+                    <span
+                        class="badge bg-info"
+                        style="font-size: 13px;">
+                        ${name}
+                     </span>
+                    `;
+
+                    var taskgrp2_view = document.getElementById("task_g2_text");
+                    var tempDiv = document.createElement("span");
+                    tempDiv.innerHTML = newHtml;
+
+                    while (tempDiv.firstChild) {
+                        taskgrp2_view.appendChild(tempDiv.firstChild);
+                    }
+                    })
+                $('#g2-modal').modal('toggle');
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+</script>
+<!-- 자동화 방식 수정 -->
+<script>
+    $(document).ready(function () {
+        $('[id^="saverpamethod"]').click(function () {
+            var pId = document.getElementById("taskid").innerText;
+
+            var checkbox1 = document.querySelector("#firstRadio")
+            var checkbox2 = document.querySelector("#secondRadio")
+            var checkbox3 = document.querySelector("#thirdRadio")
+
+            var rpa_method;
+                if (checkbox1.checked) {
+                    rpa_method = "Schedule";
+                } else if (checkbox2.checked) {
+                    rpa_method = "Trigger";
+                } else if (checkbox3.checked) {
+                    rpa_method = "Both";
+                }
+
+            var dataToSend = {
+                pId: pId,
+                rpa_method: rpa_method
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updaterpamethod/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                var rpamethod_view = document.getElementById("rpamethod_text");
+                rpamethod_view.innerHTML = "";
+
+                if (rpa_method === 'Schedule') {
+                    write('지정된 시간');
+                } else if (rpa_method === 'Trigger') {
+                    write('내가 원할 때');
+                } else {
+                    write('지정된 시간');
+                    write('내가 원할 때');
+                }
+
+
+                function write(innerText) {
+                    var rpamethod_view = document.getElementById("rpamethod_text");
+                    var newHtml = `
+                    <span
+                        class="badge bg-info"
+                        style="font-size: 13px;">
+                        ${innerText}
+                     </span>
+                    `;
+
+                    var tempDiv = document.createElement("span");
+                    tempDiv.innerHTML = newHtml;
+
+                    while (tempDiv.firstChild) {
+                        rpamethod_view.appendChild(tempDiv.firstChild);
+                    }
+                }
+
+
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+
+</script>
+<!-- 총 작업 인원 수정 -->
+<script>
+$(document).ready(function () {
+        $('[id^="savertotalmng"]').click(function () {
+
+            var pId = document.getElementById("taskid").innerText;
+            var mngramount = document.querySelector("#simpleinput1").value
+            if (mngramount === '') {
+                warningnotification_comment();
+                return;
+            }
+
+            var dataToSend = {
+                pId: pId,
+                mngramount: mngramount
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updatemngramount/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                    document.querySelector("#manager_amount_text").innerText = mngramount + '명';
+                    $('#totalmng-modal').modal('toggle');
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+</script>
+<!-- 인당 작업 시간 수정 -->
+<script>
+$(document).ready(function () {
+        $('[id^="saverpermin"]').click(function () {
+
+            var pId = document.getElementById("taskid").innerText;
+            var permin = document.querySelector("#simpleinput2").value
+            if (permin === '') {
+                warningnotification_comment();
+                return;
+            }
+            var dataToSend = {
+                pId: pId,
+                permin: permin
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/updatepermin/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                    document.querySelector("#permin_text").innerText = permin + "min";
+                    $('#permin-modal').modal('toggle');
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+</script>
+<!-- page 로드 시 기본 정보 업데이트 -->
+<script>
+var inputElement1 = document.getElementById("simpleinput1");
+var inputElement2 = document.getElementById("simpleinput2");
+
+inputElement1.addEventListener("input", function() {
+    var inputValue = parseInt(inputElement1.value);
+    if (inputValue < 1 || isNaN(inputValue)) {
+        inputElement1.value = 1;
+    }
+});
+inputElement2.addEventListener("input", function() {
+    var inputValue = parseInt(inputElement2.value);
+    if (inputValue < 1 || isNaN(inputValue)) {
+        inputElement2.value = 1;
+    }
+});
+function set_task_g1() {
+    var task_g1 = '{{ task_g1|safe }}';
+    var array = task_g1.split('/');
+    var task_g1_text = document.getElementById("task_g1_text");
+
+    var htmlContent = '';
+
+    array.forEach(function(element) {
+        htmlContent += '<span class="badge bg-info" style="font-size: 13px;">' + element + '</span>&nbsp;';
+    });
+
+    task_g1_text.innerHTML = htmlContent;
+
+    var selectElement = document.getElementById("mySelect_type2");
+}
+
+function set_task_g2() {
+    var task_g2 = '{{ task_g2|safe }}';
+    var array = task_g2.split('/');
+    var task_g2_text = document.getElementById("task_g2_text");
+
+    var htmlContent = '';
+
+    array.forEach(function(element) {
+        htmlContent += '<span class="badge bg-info" style="font-size: 13px;">' + element + '</span>&nbsp;';
+    });
+
+    task_g2_text.innerHTML = htmlContent;
+}
+
+<!--rpamethod_text-->
+function set_rpamethod() {
+    var rpamethod = '{{ rpamethod|safe }}';
+    var rpamethod_text = document.getElementById("rpamethod_text");
+    var element = '';
+    var htmlContent = '';
+
+    if (rpamethod == 'Schedule') {
+        element = '지정된 시간';
+    } else if (rpamethod == 'Trigger') {
+        element = '내가 원할 때';
+    }
+    htmlContent += '<span class="badge bg-info" style="font-size: 13px;">' + element + '</span>';
+    rpamethod_text.innerHTML = htmlContent;
+    if (rpamethod == 'Both') {
+        htmlContent += '<span class="badge bg-info" style="font-size: 13px;">지정된 시간</span>&nbsp;';
+        rpamethod_text.innerHTML = htmlContent;
+        htmlContent += '<span class="badge bg-info" style="font-size: 13px;">내가 원할 때</span>';
+        rpamethod_text.innerHTML = htmlContent;
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    set_task_g1()
+    set_task_g2()
+    set_rpamethod()
+});
+</script>
+<!-- 업무 설계 단계 추가 -->
+<script>
+function addjob(idx) {
+  var newHtml = `
+    <div class="card mb-0 mt-2 clickable-card">
+      <div class="card-body">
+        <div class="d-flex align-items-start">
+          <div style="display: grid; place-items: center; margin: 0 auto;">
+            <input class="form-check-input me-1" type="checkbox" id="firstCheckbox">
+          </div>&nbsp;&nbsp;&nbsp;&nbsp;
+          <input type="text" id="simpleinput" class="form-control" style="width: 500px;">&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div style="display: grid; place-items: center; height: 4vh; font-size: 18px;">
+            <i class="mdi mdi-trash-can-outline" style="visibility: hidden;"></i>
+          </div>
+          <span class="dragula-handle"></span>
+        </div>
+      </div>
+    </div>
+  `;
+  var handleDragulaLeft = document.getElementById("handle-dragula-left" + idx);
+
+  var tempDiv = document.createElement("div");
+  tempDiv.innerHTML = newHtml;
+
+  while (tempDiv.firstChild) {
+    handleDragulaLeft.appendChild(tempDiv.firstChild);
+  }
+}
+
+</script>
+<!--휴지통 보이게 하기-->
+<script>
+document.addEventListener("click", function(event) {
+    var clickableCards = document.querySelectorAll(".dragula-handle");
+
+    clickableCards.forEach(function(card, index) {
+        if (card.contains(event.target)) {
+            var icons = document.querySelectorAll('i.mdi.mdi-trash-can-outline');
+            var firstIcon = icons[index];
+            firstIcon.style.visibility = (firstIcon.style.visibility === "hidden") ? "visible" : "hidden";
+        }
+    });
+});
+
+
+<!--휴지통 클릭 시 업무 설계 단계 삭제하기-->
+document.addEventListener("click", function(event) {
+    var trashcans = document.querySelectorAll('i.mdi.mdi-trash-can-outline');
+    trashcans.forEach(function(can, index) {
+        if (can.contains(event.target)) {
+        var cards = document.querySelectorAll('.card.mb-0.mt-2.clickable-card');
+            if (cards.length > 0) {
+                var Card = cards[index];
+                Card.remove();
+            }
+        }
+    });
+});
+</script>
+<script>
+    for (var i = 0; i < detailInfo.length; i++) {
+        var counter = 0;
+        var jsonString = detailInfo[i].fields.progress_job;
+        var jsonString_done = detailInfo[i].fields.progress_job_done;
+        var rpa_id = detailInfo[i].fields.rpa_id;
+        var arr = JSON.parse(jsonString);
+        var arrDone = JSON.parse(jsonString_done);
+
+        arr.forEach(function(item) {
+
+        var isChecked = false;
+        <!--여기가 업무 순서 추가 하는 부분-->
+        var chkboolean = arrDone[counter];
+        if (chkboolean == 'Y'){
+           var isChecked = true;
+        }
+
+        var newHtml = `
+          <div class="card mb-0 mt-2 clickable-card">
+            <div class="card-body">
+              <div class="d-flex align-items-start">
+                <div style="display: grid; place-items: center; margin: 0 auto;">
+                  <input class="form-check-input me-1" type="checkbox" id="firstCheckbox" ${isChecked ? 'checked' : ''}>
+                </div>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="text" id="simpleinput" class="form-control" style="width: 500px;" value='${item}'>&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <div style="display: grid; place-items: center; height: 4vh; font-size: 18px;">
+                  <i class="mdi mdi-trash-can-outline" style="visibility: hidden; z-index: 9999;"></i>
+                </div>
+                <span class="dragula-handle"></span>
+              </div>
+            </div>
+          </div>
+        `;
+          counter++;
+          var handleDragulaLeft = document.getElementById("handle-dragula-left" + rpa_id);
+
+          var tempDiv = document.createElement("div");
+          tempDiv.innerHTML = newHtml;
+
+          while (tempDiv.firstChild) {
+            handleDragulaLeft.appendChild(tempDiv.firstChild);
+          }
+
+
+        });
+    }
+
+
+<!--과제 저장하기-->
+
+function updatetaskstatus(idx) {
+
+    var container = document.getElementById("progresslist"  + idx);
+    var inputs = container.getElementsByTagName("input");
+
+    var values = [];
+    var values_chk = [];
+
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].type === "text" && inputs[i].value !== '') {
+        values.push(inputs[i].value);
+      }
+    }
+
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].type === "checkbox") {
+        var checkbox = inputs[i];
+        if (inputs[i + 1].type === "text" && inputs[i + 1].value !== '') {
+          if (checkbox.checked) {
+              values_chk.push("Y");
+            } else {
+              values_chk.push("N");
+            };
+         }
+      }
+    }
+
+    let tableData = [];
+    let rowData = {};
+
+    rowData.rpaid = idx;
+    var progresslist = JSON.stringify(values);
+    if (values.length === 0) {
+      var progresslist = "";
+      var progresslist_chk = "";
+    } else {
+      var progresslist = JSON.stringify(values);
+      var progresslist_chk = JSON.stringify(values_chk);
+    }
+
+    rowData.progresslist = progresslist;
+    rowData.progresslist_chk = progresslist_chk;
+
+    tableData.push(rowData);
+
+  fetch('/updatestatus_details/', {
+    method: 'POST',
+    body: JSON.stringify(tableData),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    },
+  })
+    .then(() => {
+      setTimeout(() => {
+        $('#bs-example-modal-lg' + idx).modal('toggle');
+        location.reload();
+      }, 250);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+</script>
+<script>
+document.getElementById('file-previews').addEventListener('mousemove', function() {
+    var divElements = document.querySelectorAll('.card.mt-1.mb-0.shadow-none.border.dz-processing.dz-success.dz-complete');
+
+    divElements.forEach(function(divElement) {
+        var imgElement = divElement.querySelector('img[data-dz-thumbnail]');
+        var a1 = divElement.querySelector('div:nth-child(2) a');
+        var content1 = a1.textContent;
+        var parts = content1.split('.');
+        var lastPart = parts[parts.length - 1];
+        if (imgElement.getAttribute('src') === '#') {
+            if (lastPart.includes('xls')) {
+                var newSrc = '{% static 'assets/images/excel.PNG' %}';
+            } else if (lastPart.includes('ppt')) {
+                var newSrc = '{% static 'assets/images/ppt.png' %}';
+            } else if (lastPart.includes('doc')) {
+                var newSrc = '{% static 'assets/images/word.png' %}';
+            } else if (lastPart.includes('txt')) {
+                var newSrc = '{% static 'assets/images/txt.png' %}';
+            } else if (lastPart.includes('pdf')) {
+                var newSrc = '{% static 'assets/images/pdf.png' %}';
+            }
+            imgElement.setAttribute('src', newSrc);
+        }
+    });
+ });
+
+ function myFunction(event) {
+    var clickedElement = event.target;
+    var cardElement = clickedElement.closest('.card');
+    var linkElement = cardElement.querySelector('a.text-muted.fw-bold[data-dz-name]');
+    var linkText = linkElement.textContent || linkElement.innerText;
+    removeRequest(linkText);
+    var cardElement = event.target.closest('.card');
+    if (cardElement) {
+        cardElement.remove();
+    }
+}
+</script>
+<!--파일 삭제-->
+<script>
+
+function removeRequest(strtext){
+    var filename = strtext;
+    var rpa_id = '{{ taskid }}';
+    let tableData = [];
+    let rowData = {};
+    rowData.field1 = filename;
+    rowData.field2 = rpa_id;
+    tableData.push(rowData);
+
+  fetch('/deletefile_task_indi/', {
+    method: 'POST',
+    body: JSON.stringify(tableData),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    },
+  })
+    .then(() => {
+      setTimeout(() => {
+      }, 1500);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+</script>
+<!--좌측 navbar 조정-->
+<script>
+var url = new URL(window.location.href);
+
+var chkf = url.searchParams.get('chkf');
+
+if (chkf === null) {
+    var lil = document.getElementById('liltaskList');
+    var li1 = document.getElementById('liftask');
+    var li2 = document.getElementById('listask');
+    var li3 = document.getElementById('littask');
+}
+if (chkf === 'dev') {
+    var lil = document.getElementById('lilrpaTodoList');
+    var li1 = document.getElementById('lifrpa');
+    var li2 = document.getElementById('lisrpa');
+    var li3 = document.getElementById('litrpa');
+}
+if (chkf === 'manage') {
+    var lil = document.getElementById('lilrpaManageList');
+    var li1 = document.getElementById('lifrpa');
+    var li2 = document.getElementById('lisrpa');
+    var li3 = document.getElementById('litrpa');
+}
+if (chkf === 'stop') {
+    var lil = document.getElementById('lilrpaManageList_stop');
+    var li1 = document.getElementById('lifrpa');
+    var li2 = document.getElementById('lisrpa');
+    var li3 = document.getElementById('litrpa');
+}
+    li1.className = 'side-nav-item menuitem-active';
+    li2.setAttribute("aria-expanded", "true");
+    li3.className = 'collapse show';
+    lil.classList.add("menuitem-active");
+</script>
+</body>
+</html>

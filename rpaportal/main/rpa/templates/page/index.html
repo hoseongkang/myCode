@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8"/>
+    <title> RPA PORTAL </title>
+    {% include 'page/head_basic_scripts.html' %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+    .table th {
+        height: 30px;
+        padding: 2px;
+    }
+.apexcharts-title-text {
+    font-weight: bold;
+    color: red;
+}
+</style>
+    <style>
+    .modal-header {
+      cursor: grab;
+    }
+.apexcharts-menu-icon {
+    display: none;
+}
+    </style>
+
+    <style>
+    @keyframes blink {
+        0% { opacity: 0.8; }
+        50% { opacity: 0.3; }
+        100% { opacity: 1; }
+    }
+
+    .blink-animation {
+        animation: blink 1.5s ease-in-out infinite;
+    }
+</style>
+    <style>
+    .popover {
+        max-width: 500px; /* 원하는 너비로 조절하세요 */
+    }
+</style>
+</head>
+
+<body>
+        <!-- Pre-loader -->
+        <div id="preloader">
+            <div id="status">
+                <div class="bouncing-loader"><div ></div><div ></div><div ></div></div>
+            </div>
+        </div>
+        <!-- End Preloader-->
+<!-- Begin page -->
+<div class="wrapper">
+    {% include 'page/navbar_top.html' %}
+    {% include 'page/navbar_left.html' %}
+
+    <div class="content-page">
+        <div class="content">
+
+            <!-- Start Content-->
+            <div class="container-fluid">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+<!--                            <div class="page-title-right">-->
+<!--                                우측 상단 타이틀 들어갈 수 있는 부분-->
+<!--                            </div>-->
+                            <h4 class="page-title">대시보드</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-4 col-lg-4">
+                        <div class="row" style="height: 92%; width: 100%;">
+                            <div style="height: 92%;">
+<!--                                <button type="button" class="btn btn-info h-100" style="height: 92%; width: 105%;">-->
+
+<!--                                    <span>과제 신청</span>-->
+<!--                                    <i class="ri-send-plane-line"></i>-->
+<!--                                </button>-->
+                                <button type="button" class="btn btn-info h-100" style="height: 92%; width: 105%;" onclick="redirectTo('/requestnewtask')">
+    <h4>RPA 신규 과제 요청</h4>
+</button>
+
+                            </div>
+
+                        </div>
+
+
+<!--                                <div class="card widget-flat">-->
+<!--                                    <a href="/requestnewtask">-->
+<!--                                        <div class="card-body text-center" style="background-color: #1257AA;">-->
+<!--                                            <i class='uil uil-window-restore float-end'></i>-->
+<!--                                            <h2>RPA 신규과제 접수</h2>-->
+<!--                                        </div>-->
+<!--                                    </a>-->
+<!--                                </div>-->
+                    </div>
+                    <div class="col-xl-8 col-lg-8">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="row text-center">
+                                    <div class="col-sm-4">
+                                        <div class="border rounded p-2 mb-2">
+                                            <ul class="list-inline mb-2">
+                                                <li class="list-inline-item font-16 fw-semibold"><a class="text-reset">
+                                                    전체 운영 수
+                                                </a></li>
+                                            </ul>
+                                            <h3>
+                                                <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small>
+                                                <span id="rpataskcount">{{ taskallcount }}</span>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="border rounded p-2 mb-2">
+                                            <ul class="list-inline mb-2">
+                                                <li class="list-inline-item font-16 fw-semibold"><a class="text-reset">
+                                                    금일 수행 건
+                                                </a></li>
+                                                <li class="list-inline-item text-muted"><i
+                                                        class="mdi mdi-circle-small"></i></li>
+                                                <li class="list-inline-item font-13 fw-semibold text-muted">
+                                                    <script>
+                                                                document.write((new Date().getMonth() + 1) + '/' + new Date().getDate())
+                                                    </script>
+                                                </li>
+                                            </ul>
+                                            <h3 id="something">
+                                                <small class="mdi mdi-checkbox-blank-circle text-primary align-middle me-1 blink-animation"
+                                                       data-bs-toggle="tooltip" data-bs-title="RPA수행 중"
+                                                       id="tooltipforrpa">
+                                                </small>
+                                                <span class="count" id="cntEXE"></span>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="border rounded p-2 mb-2">
+                                            <ul class="list-inline mb-2">
+                                                <li class="list-inline-item font-16 fw-semibold"><a class="text-reset">전일
+                                                    수행 건</a></li>
+                                                <li class="list-inline-item text-muted"><i
+                                                        class="mdi mdi-circle-small"></i></li>
+                                                <li class="list-inline-item font-13 fw-semibold text-muted">
+                                                    <script>
+                                                                document.write(((d=new Date()).getMonth()+1)+'/'+(d.getDate()-1));
+                                                    </script>
+                                                </li>
+                                            </ul>
+                                            <h3>
+                                                <small class="mdi mdi-checkbox-blank-circle text-success align-middle me-1"></small>
+                                                <span id="cntEXE_yesterday"></span>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    {% csrf_token %}
+                    <div class="col-xl-4 col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>
+                                    <mark>그룹 운영 과제 리스트</mark>
+                                </h4>
+                            </div>
+<!--                            <div>-->
+<!--                                <div class="container">-->
+<!--                                    &nbsp;<span class="badge bg-dark">전체</span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                            <br>
+                            <div class="accordion" id="CardaccordionExample">
+                                <div class="card mb-0">
+                                    <div class="card-header" id="CardheadingOne" style="display: none;">
+                                        <h5 class="m-0">
+                                            <a class="custom-accordion-title d-block pt-0 pb-0"
+                                               data-bs-toggle="collapse" href="#collapseOne"
+                                               aria-expanded="true" aria-controls="collapseOne">
+                                            </a>
+                                        </h5>
+                                    </div>
+
+                                    <div id="collapseOne" class="collapse show"
+                                         aria-labelledby="CardheadingOne"
+                                         data-bs-parent="#CardaccordionExample">
+                                        <div class="card-body pt-0 scrollable-content"
+                                             style="max-height: 660px; overflow-y: auto;">
+                                            <br>
+
+                                                <dl class="row mb-0" id="updatetasklist">
+                                                    <ul>
+                                                    {% for task in task_TBL %}
+                                                    <li id="list_{{ task.id }}">
+                                                        <div class="row">
+                                                            <dt class="col" style="font-size: 14px;">
+                                                                <div style="display: inline-block;"
+                                                                     data-bs-toggle="popover"
+                                                                     title="{{ task.taskname }}" data-bs-trigger="hover"
+                                                                     data-bs-html="true"
+                                                                     data-bs-content="{{ task.taskexplanation|linebreaks }}">
+                                                                    ▪ {{ task.taskname }}
+                                                                </div>
+                                                            </dt>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <dt class="col-sm-1"></dt>
+                                                            <dt class="col-sm-11" style="font-size: 17px;" id="newlist">
+                                                                <p>
+                                                                    {% if 'Staff' in task.business_type %}
+                                                                    {% with 'secondary-lighten' as badge_color %}
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.business_type }}</span>
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.task_group1 }}</span>
+                                                                    <span class="badge badge-dark-lighten">{{ task.task_group2 }}</span>
+
+                                                                    {% endwith %}
+                                                                    {% elif '식품' in task.business_type %}
+                                                                    {% with 'danger-lighten' as badge_color %}
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.business_type }}</span>
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.task_group1 }}</span>
+                                                                    <span class="badge badge-dark-lighten">{{ task.task_group2 }}</span>
+                                                                    {% endwith %}
+                                                                    {% elif '바이오' in task.business_type %}
+                                                                    {% with 'success-lighten' as badge_color %}
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.business_type }}</span>
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.task_group1 }}</span>
+                                                                    <span class="badge badge-dark-lighten">{{ task.task_group2 }}</span>
+                                                                    {% endwith %}
+                                                                    {% elif '패키징' in task.business_type %}
+                                                                    {% with 'primary-lighten' as badge_color %}
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.business_type }}</span>
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.task_group1 }}</span>
+                                                                    <span class="badge badge-dark-lighten">{{ task.task_group2 }}</span>
+                                                                    {% endwith %}
+                                                                    {% elif '화학' in task.business_type %}
+                                                                    {% with 'info-lighten' as badge_color %}
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.business_type }}</span>
+                                                                    <span class="badge badge-{{ badge_color }}">{{ task.task_group1 }}</span>
+                                                                    <span class="badge badge-dark-lighten">{{ task.task_group2 }}</span>
+                                                                    {% endwith %}
+                                                                    {% endif %}
+                                                                </p>
+                                                            </dt>
+                                                        </div>
+                                                    </li>
+                                                    {% endfor %}
+
+</ul>
+                                                </dl>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br><br>
+                        </div>
+                    </div>
+                    <div class="col-xl-8 col-lg-8">
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12">
+                                <div class="card card-h-100">
+                                    <div class="row">
+                                        <div class="col-xl-4 col-lg-4">
+                                            <div class="card-body">
+                                                <h4 class="header-title">사업부</h4>
+                                                <div dir="ltr">
+                                                    <div dir="ltr">
+                                                        <div id="datalables-bar" class="apex-charts"
+                                                             data-colors="#6c757d,#fa5c7c,#0acf97,#727cf5,#39afd1"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-xl-8 col-lg-8">
+
+                                            <div class="card-body">
+                                                <h4 class="header-title">업무군</h4>
+                                                <div dir="ltr">
+                                                    <div id="basic-treemap" class="apex-charts"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--                                    <div class="row">-->
+                                    <!--                                        <div class="col-xl-12 col-lg-12">-->
+                                    <!--                                    </div>-->
+                                    <!--                                    </div>-->
+                                </div>
+                            </div>
+
+                            <!--                            <div class="col-xl-8 col-lg-8">-->
+                            <!--                                <div class="card card-h-100">-->
+                            <!--                                    <div class="card-body">-->
+                            <!--                                        <h4 class="header-title">업무군</h4>-->
+                            <!--                                        <div dir="ltr">-->
+                            <!--                                            <div id="basic-treemap" class="apex-charts"></div>-->
+                            <!--                                        </div>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+                            <!--                            </div>-->
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12">
+                                <div class="card card-h-100">
+                                    <div class="card-body">
+                                        <h4 class="header-title">업무 유형</h4>
+                                        <div dir="ltr">
+<!--                                            <div id="distributed-treemap" class="apex-charts"-->
+<!--                                                 data-colors="#686868,#808080,#ADADAD,#B8B8B8,#C2C2C2,#A7A7A7,#949494"></div>-->
+
+                                            <div id="distributed-treemap" class="apex-charts"
+                                                 data-colors="#727cf5,#0acf97,#fa5c7c,#6c757d,#39afd1,#ffc35a, #eef2f7, #313a46"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            <div class="row">
+                <div class="col-xl-3 col-lg-3">
+                        <div class="card card-h-100">
+                            <div class="d-flex card-header justify-content-between align-items-center">
+                                <h4 class="header-title">RPA 개발 진행 단계</h4>
+                            </div>
+                            <div class="card-body pt-0">
+                                <div class="scrollable-content" style="max-height: 250px; overflow-y: auto;">
+                                    <div class="timeline-alt py-0">
+                                        <div class="timeline-item">
+                                            <i class="ri-edit-line bg-info-lighten text-info timeline-icon"></i>
+                                            <div class="timeline-item-info">
+                                                <a href="#" class="text-info fw-bold mb-1 d-block">RPA 과제 신청</a>
+                                                <small>-- RPA 과제 신청으로 시작</small>
+                                                <p class="mb-0 pb-2">
+                                                    <small class="text-muted"></small>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-item">
+                                            <i class="mdi mdi-map-marker-check-outline bg-primary-lighten text-primary timeline-icon"></i>
+                                            <div class="timeline-item-info">
+                                                <a href="#" class="text-primary fw-bold mb-1 d-block">과제 접수</a>
+                                                <small>-- <span class="fw-bold">RPA 담당자</span>
+                                                    접수/검토 확인
+                                                </small>
+                                                <p class="mb-0 pb-2">
+                                                    <small class="text-muted"></small>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-item">
+                                            <i class="ri-search-2-line bg-info-lighten text-info timeline-icon"></i>
+                                            <div class="timeline-item-info">
+                                                <a href="#" class="text-info fw-bold mb-1 d-block">업무 분석 및 미팅</a>
+                                                <small>-- 세부 업무 설명 및 자동화 여부 판단
+                                                    <span class="fw-bold"></span>
+                                                </small>
+                                                <p class="mb-0 pb-2">
+                                                    <small class="text-muted"></small>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-item">
+                                            <i class="ri-play-fill bg-primary-lighten text-primary timeline-icon"></i>
+                                            <div class="timeline-item-info">
+                                                <a href="#" class="text-primary fw-bold mb-1 d-block">RPA 개발 시작</a>
+                                                <small>-- 업무 정의 완료 후 개발 시작</small>
+                                                <p class="mb-0 pb-2">
+                                                    <small class="text-muted"></small>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="timeline-item">
+                                            <i class="ri-check-line bg-primary-lighten text-primary timeline-icon"></i>
+                                            <div class="timeline-item-info">
+                                                <a href="#" class="text-primary fw-bold mb-1 d-block">자동화 완료!</a>
+                                                <p class="mb-0 pb-2">
+                                                    <small class="text-muted"></small>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="col-xl-5 col-lg-5">
+                        <div class="card card-h-100">
+                            <div class="d-flex card-header justify-content-between align-items-center">
+                                <h4 class="header-title">FAQ</h4>
+                            </div>
+                            <div class="card-body pt-0">
+                                 <div class="scrollable-content" style="max-height: 250px; overflow-y: auto;">
+                                            <div class="accordion accordion-flush" id="accordionFlushExample">
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="flush-headingThree">
+                                                        <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#flush-collapseThree"
+                                                                aria-expanded="false"
+                                                                aria-controls="flush-collapseThree"
+                                                                style="font-weight: bold;">
+                                                            퇴사 및 인사이동으로 인해 업무 담당자가 변경되는 경우는 어떻게 하나요?
+                                                        </button>
+                                                    </h2>
+                                                    <div id="flush-collapseThree" class="accordion-collapse collapse"
+                                                         aria-labelledby="flush-headingThree"
+                                                         data-bs-parent="#accordionFlushExample">
+                                                        <div class="accordion-body">
+                                                            [RPA과제 > 내 과제]에서 새 담당자를 추가할 수 있습니다.
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="flush-headingFour">
+                                                        <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#flush-collapseFour"
+                                                                aria-expanded="false"
+                                                                aria-controls="flush-collapseFour"
+                                                                style="font-weight: bold;">
+                                                            RPA결과 메일 수신인은 어떻게 변경하나요?
+                                                        </button>
+                                                    </h2>
+                                                    <div id="flush-collapseFour" class="accordion-collapse collapse"
+                                                         aria-labelledby="flush-headingFour"
+                                                         data-bs-parent="#accordionFlushExample">
+                                                        <div class="accordion-body">
+                                                            <p>[RPA과제 > 내 과제 > Details]에서 변경을 원하시는 업무에서 직접 변경 가능합니다.</p>
+                                                            <p>*경우에 따라 직접 변경이 안되는 과제의 경우 RPA 담당자에게 문의 바랍니다.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="flush-headingFive">
+                                                        <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#flush-collapseFive"
+                                                                aria-expanded="false"
+                                                                aria-controls="flush-collapseFive"
+                                                                style="font-weight: bold;">
+                                                            RPA는 주로 어떤 업무에 적용할 수 있나요?
+                                                        </button>
+                                                    </h2>
+                                                    <div id="flush-collapseFive" class="accordion-collapse collapse"
+                                                         aria-labelledby="flush-headingFive"
+                                                         data-bs-parent="#accordionFlushExample">
+                                                        <div class="accordion-body">
+                                                            RPA는 특정 업무에 국한되지 않고 시스템 기반에서 이뤄지는 모든 업무에 적용이 가능합니다.
+
+                                                            특히 규칙적이고 빈번하게 발생되며 대량으로 처리되는 업무,
+                                                            다양한 시스템을 오가며 사람 손이 많이 가는 복잡한 업무,
+                                                            사람의 실수 발생 빈도가 높은 업무, 숫자나 데이터등의 비교,
+                                                            검증이 필요한 업무에 활용 시 보도 높은 효과를 발휘할 수 있습니다.
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="flush-headingSix">
+                                                        <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#flush-collapseSix"
+                                                                aria-expanded="false"
+                                                                aria-controls="flush-collapseSix"
+                                                                style="font-weight: bold;">
+                                                            RPA가 뭔가요?
+                                                        </button>
+                                                    </h2>
+                                                    <div id="flush-collapseSix" class="accordion-collapse collapse"
+                                                         aria-labelledby="flush-headingSix"
+                                                         data-bs-parent="#accordionFlushExample">
+                                                        <div class="accordion-body">
+                                                            RPA는 Robotic Process Automation의 줄임말로 사람이 처리하던 단순 반복 업무를
+                                                            소프트웨어 기반의 로봇을 활용해 자동화 처리함으로써 업무 생산성과 품질을 높여
+                                                            업무 편의성을 제공하고 더불어 담당자 업무의 부가가치를 높일 수 있도록 도와주는 디지털 신기술입니다.
+
+                                                            기존의 사람이 처리하던 단순 반복적이고 규칙적이며 대량으로 처리해야 했던 업무를
+                                                            RPA로 전환할 경우 사람보다 10배 이상 빠른 속도로 실수 없이, 24시간 365일 끊김 없는 업무처리가 가능해집니다.
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+            </div>
+            </div>
+
+
+        </div>
+
+{% include 'page/footer_bottom.html' %}
+    </div>
+
+
+</div>
+
+<script>
+
+
+$(document).ready(function () {
+    var ownVideos = $("iframe");
+    $.each(ownVideos, function (i, video) {
+        var frameContent = $(video).contents().find('body').html();
+        if (frameContent) {
+            $(video).contents().find('body').html(frameContent.replace("autoplay", "controls"));
+        }
+    });
+});
+
+ function seekToTime(value) {
+    var vidPlayer = $("#video1")[0];
+    var seekToTime = value;
+    if (seekToTime < 0 || seekToTime > vidPlayer.duration)
+        return;
+
+    vidPlayer.currentTime = seekToTime;
+    $("#myVideo")[0].play();
+
+}
+
+$(document).ready(function() {
+  $("#logoutBtn").click(function(event) {
+    event.preventDefault();
+    var updatePromise = fetch('/logout/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+      },
+    });
+    updatePromise.then(function(response) {
+    if (response.ok) {
+        location.reload();
+      }
+    }).catch(function(error) {
+    });
+  });
+});
+
+
+
+
+var videoFrame = document.getElementById('video_4');
+var modal = document.getElementById('full-width-modal4');
+
+modal.addEventListener('show.bs.modal', function () {
+    // 모달이 열리는 시점에 영상 로드
+    videoFrame.src = "{% static 'assets/video/허재원.mp4' %}";
+});
+
+modal.addEventListener('hide.bs.modal', function () {
+    // 모달이 닫히는 시점에 영상 로드 취소
+    videoFrame.removeAttribute('src');
+});
+
+
+
+</script>
+<!-- Vendor js -->
+<script src="{% static 'assets/js/vendor.min.js' %}"></script>
+<script>
+var output_data = {{ output_data|safe }};
+var output_data2 = {{ output_data2|safe }};
+
+<!--  window.addEventListener('resize', refreshchart);-->
+</script>
+        <!-- jQuery -->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- Apex Charts js -->
+<script src="{% static 'assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
+<!--<script src="{% static 'assets/js/pages/demo.apex-bar.js' %}"></script>-->
+<!-- Apex Chart Treemap Demo js -->
+<!--<script src="{% static 'assets/js/pages/demo.apex-treemap.js' %}"></script>-->
+
+
+<!-- App js -->
+<script src="{% static 'assets/js/app.min.js' %}"></script>
+<!--        차트 업데이트-->
+<script>
+  $(function () {
+    $('.modal-dialog').draggable({
+      handle: ".modal-header"
+    });
+  });
+sessionStorage.setItem('biz_selected', 'null');
+sessionStorage.setItem('grp1_selected', 'null');
+
+dataColors = $("#datalables-bar").data("colors"),
+options = {
+    chart: { height: 300, type: "bar" },
+    plotOptions: {
+        bar: {
+            barHeight: "95%",
+            distributed: !0,
+            horizontal: !0,
+            dataLabels: { position: "bottom" }
+        }
+    },
+    colors: colors = dataColors ? dataColors.split(",") : colors,
+    dataLabels: {
+        enabled: !0,
+        textAnchor: "start",
+        style: { colors: ["#fff"] },
+        formatter: function(o, a) {
+            return a.w.globals.labels[a.dataPointIndex] + ":  " + o
+        },
+        offsetX: 0,
+        dropShadow: { enabled: !1 }
+    },
+    series: [{ data: {{ taskallcount_biz|safe }} }],
+    stroke: { width: 0, colors: ["#fff"] },
+    xaxis: {
+        categories: {{ biz_master|safe }},
+        axisBorder: { show: !1 }
+    },
+    yaxis: { labels: { show: !0 }, show: false },
+    grid: { borderColor: "#f1f3fa" },
+    tooltip: {
+        enabled: false
+    },
+    legend: {
+        show: false // Hides the legend
+    }
+},
+(chart = new ApexCharts(document.querySelector("#datalables-bar"), options)).render();
+
+
+
+resetcharts();
+
+function getColor(result) {
+    if (result === "Staff") {
+        return "#6c757d";
+    } else if (result === "식품") {
+        return "#fa5c7c";
+    } else if (result === "바이오") {
+        return "#0acf97";
+    } else if (result === "패키징") {
+        return "#727cf5";
+    } else if (result === "화학") {
+        return "#39afd1";
+    } else {
+        return "";
+    }
+}
+
+var basicmapContainer = document.getElementById('datalables-bar');
+
+basicmapContainer.addEventListener('click', function(event) {
+
+
+var clickedElement = event.target;
+    if (clickedElement.tagName !== 'path') {
+        return;
+    }
+
+
+    var pathElements = Array.from(basicmapContainer.querySelectorAll('path'));
+    var selectedIndex = null;
+
+    pathElements.forEach(function(pathElement, index) {
+        if (pathElement.getAttribute('selected') === 'true') {
+            selectedIndex = (index + 1);
+        }
+    });
+
+    if (selectedIndex !== null) {
+
+    var tbody = document.getElementById('updatetasklist');
+        tbody.style.display = 'none';
+        $("#collapseOne").slideToggle("slow");
+        var inputString = alertNthApexDatalabelText(selectedIndex)
+        let result = inputString.split(':')[0].trim();
+        sessionStorage.setItem('biz_selected', result);
+        var dataToSend = {
+          stype_biz: result,
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/updatemainchart_biz/',
+            data: dataToSend,
+            headers: {
+              'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[1].value
+            },
+            success: function (response) {
+                var basicTreemap = document.querySelector("#basic-treemap");
+                var biz_taskname_json = response.biz_taskname_json;
+                jsonDataArray = [];
+                var results = JSON.parse(response.biz_taskname_json);
+                var listItems = document.querySelectorAll('#updatetasklist li');
+
+                listItems.forEach(function(li) {
+                    li.style.display = 'none';
+                });
+                1
+                for (var i = 0; i < results.length; i++) {
+                    var result_node = results[i];
+                    var listItem = document.getElementById('list_' + result_node.id);
+                    if (listItem) {
+                        listItem.style.display = 'block';
+                    }
+                }
+
+                var output_data_grp1 = response.output_data_grp1;
+                var output_data_grp2 = response.output_data_grp2;
+                var colors = [getColor(result)];
+                var dataColors = $("#basic-treemap").data("colors");
+                var options = {
+                series: [{
+                    data: output_data_grp1
+                }],
+                colors: colors = dataColors ? dataColors.split(",") : colors,
+                legend: { show: !1 },
+                chart: { height: 290, type: "treemap" },
+                title: { text: "◾ " + result, align: "left" }
+                };
+
+                basicTreemap.innerHTML = '';
+                chart = new ApexCharts(document.querySelector("#basic-treemap"), options);
+                chart.render();
+
+
+
+                var distributedTreemap = document.querySelector("#distributed-treemap");
+                colors = ["#EEEEEE", "#0acf97", "#fa5c7c"];
+                dataColors = $("#distributed-treemap").data("colors");
+                options = {
+                    series: [{
+                        data: output_data_grp2
+                    }],
+                    legend: { show: !1 },
+                    chart: { height: 320, type: "treemap" },
+                    title: { text: "◾ 전체", align: "left" },
+                    colors: colors = dataColors ? dataColors.split(",") : colors,
+                    plotOptions: {
+                        treemap: {
+                            distributed: !0,
+                            enableShades: !1
+                        }
+                    }
+                };
+                distributedTreemap.innerHTML = '';
+                chart = new ApexCharts(document.querySelector("#distributed-treemap"), options);
+                chart.render();
+
+                $("#collapseOne").slideToggle("slow");
+                tbody.style.display = 'block';
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+
+
+    } else {
+        resetcharts();
+        sessionStorage.setItem('biz_selected', 'null');
+    }
+
+
+});
+
+function resetcharts() {
+    var tbody = document.getElementById('updatetasklist');
+        tbody.style.display = 'none';
+$("#collapseOne").slideToggle("slow");
+var listItems = document.querySelectorAll('#updatetasklist li');
+
+listItems.forEach(function(li) {
+    li.style.display = 'block';
+});
+    var basicTreemap = document.querySelector("#basic-treemap");
+    var colors = ["#1257AA"];
+    var dataColors = $("#basic-treemap").data("colors");
+    var options = {
+        series: [{
+            data: output_data
+        }],
+        colors: colors = dataColors ? dataColors.split(",") : colors,
+        legend: { show: !1 },
+        chart: { height: 290, type: "treemap" },
+        title: { text: "◾ 전체", align: "left" }
+    };
+    basicTreemap.innerHTML = '';
+    var chart = new ApexCharts(document.querySelector("#basic-treemap"), options);
+    chart.render();
+
+    var distributedTreemap = document.querySelector("#distributed-treemap");
+    colors = ["#727cf5", "#0acf97", "#fa5c7c"];
+    dataColors = $("#distributed-treemap").data("colors");
+    options = {
+        series: [{
+            data: output_data2
+        }],
+        legend: { show: !1 },
+        chart: { height: 320, type: "treemap" },
+        title: { text: "◾ 전체", align: "left" },
+        colors: colors = dataColors ? dataColors.split(",") : colors,
+        plotOptions: {
+            treemap: {
+                distributed: !0,
+                enableShades: !1
+            }
+        }
+    };
+    distributedTreemap.innerHTML = '';
+    chart = new ApexCharts(document.querySelector("#distributed-treemap"), options);
+    chart.render();
+    $("#collapseOne").slideToggle("slow");
+    tbody.style.display = 'block';
+    sessionStorage.setItem('biz_selected', 'null');
+    sessionStorage.setItem('grp1_selected', 'null');
+}
+
+function resetcharts_onlyfinal() {
+    var biz_selected = sessionStorage.getItem('biz_selected');
+    var grp1_selected = sessionStorage.getItem('grp1_selected');
+    var distributedTreemap = document.querySelector("#distributed-treemap");
+    colors = ["#727cf5", "#0acf97", "#fa5c7c"];
+    dataColors = $("#distributed-treemap").data("colors");
+    options = {
+        series: [{
+            data: output_data2
+        }],
+        legend: { show: !1 },
+        chart: { height: 320, type: "treemap" },
+        title: { text: "◾ 전체", align: "left" },
+        colors: colors = dataColors ? dataColors.split(",") : colors,
+        plotOptions: {
+            treemap: {
+                distributed: !0,
+                enableShades: !1
+            }
+        }
+    };
+    distributedTreemap.innerHTML = '';
+    chart = new ApexCharts(document.querySelector("#distributed-treemap"), options);
+    chart.render();
+}
+
+function alertNthApexDatalabelText(nth) {
+    var basicmapContainer = document.getElementById('datalables-bar');
+    var apexDatalabelElements = basicmapContainer.querySelectorAll('.apexcharts-datalabel');
+    return apexDatalabelElements[nth - 1].innerHTML;
+}
+
+
+<!--지금 여기 하는중--><!--지금 여기 하는중--><!--지금 여기 하는중--><!--지금 여기 하는중--><!--지금 여기 하는중--><!--지금 여기 하는중-->
+
+<!--과제 리스트 필터링 하는 부분하고 있었음-->
+<!--업무군 클릭했을 때 Table 만들어지는거 추가 작업하면 됨-->
+
+var treemapContainer = document.getElementById('basic-treemap');
+
+treemapContainer.addEventListener('click', function(event) {
+var clickedElement = event.target;
+    if (clickedElement.tagName !== 'rect') {
+        return;
+    }
+    var tbody = document.getElementById('updatetasklist');
+    tbody.style.display = 'none';
+    $("#collapseOne").slideToggle("slow");
+    var pathElements = Array.from(treemapContainer.querySelectorAll('rect'));
+    var selectedIndex = null;
+    var biz_selected = sessionStorage.getItem('biz_selected');
+
+    pathElements.forEach(function(pathElement, index) {
+        if (pathElement.getAttribute('selected') === 'true') {
+            selectedIndex = (index - 2);
+        }
+    });
+
+    if (selectedIndex !== null) {
+        var inputString = ApexDatalabelText_selected(selectedIndex)
+        let result = inputString.split(':')[0].trim();
+        sessionStorage.setItem('grp1_selected', result);
+
+          var dataToSend = {
+              stype: result,
+              biz_selected: biz_selected
+          };
+        $.ajax({
+            type: 'POST',
+            url: '/updatemainchart/',
+            data: dataToSend,
+            headers: {
+              'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[1].value
+            },
+            success: function (response) {
+              var distributedTreemap = document.querySelector("#distributed-treemap");
+                var results = JSON.parse(response.biz_taskname_json);
+                var listItems = document.querySelectorAll('#updatetasklist li');
+
+                listItems.forEach(function(li) {
+                    li.style.display = 'none';
+                });
+                1
+                for (var i = 0; i < results.length; i++) {
+                    var result_node = results[i];
+                    var listItem = document.getElementById('list_' + result_node.id);
+                    if (listItem) {
+                        listItem.style.display = 'block';
+                    }
+                }
+              var output_data_new = response.output_data_new;
+              colors = ["#727cf5", "#0acf97", "#fa5c7c"];
+              dataColors = $("#distributed-treemap").data("colors");
+              options = {
+                  series: [{
+                      data: output_data_new
+                  }],
+                  legend: { show: !1 },
+                  chart: { height: 320, type: "treemap" },
+                  title: { text: "◾ " + result, align: "left" },
+                  colors: colors = dataColors ? dataColors.split(",") : colors,
+                  plotOptions: {
+                      treemap: {
+                          distributed: !0,
+                          enableShades: !1
+                      }
+                  }
+              };
+              distributedTreemap.innerHTML = '';
+              chart = new ApexCharts(document.querySelector("#distributed-treemap"), options);
+              chart.render();
+              tbody.style.display = 'block';
+              $("#collapseOne").slideToggle("slow");
+
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+       } else {
+
+          var dataToSend = {
+              stype: "null",
+              biz_selected: biz_selected
+          };
+           $.ajax({
+                type: 'POST',
+                url: '/updatemainchart/',
+                data: dataToSend,
+                headers: {
+                  'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[1].value
+                },
+                success: function (response) {
+                var distributedTreemap = document.querySelector("#distributed-treemap");
+                var results = JSON.parse(response.biz_taskname_json);
+                var listItems = document.querySelectorAll('#updatetasklist li');
+
+                listItems.forEach(function(li) {
+                    li.style.display = 'none';
+                });
+                1
+                for (var i = 0; i < results.length; i++) {
+                    var result_node = results[i];
+                    console.log(result_node.id)
+                    var listItem = document.getElementById('list_' + result_node.id);
+                    if (listItem) {
+                        listItem.style.display = 'block';
+                    }
+                }
+                  var output_data_new = response.output_data_new;
+                  colors = ["#727cf5", "#0acf97", "#fa5c7c"];
+                  dataColors = $("#distributed-treemap").data("colors");
+                  options = {
+                      series: [{
+                          data: output_data_new
+                      }],
+                      legend: { show: !1 },
+                      chart: { height: 320, type: "treemap" },
+                      title: { text: "◾ 전체", align: "left" },
+                      colors: colors = dataColors ? dataColors.split(",") : colors,
+                      plotOptions: {
+                          treemap: {
+                              distributed: !0,
+                              enableShades: !1
+                          }
+                      }
+                  };
+                  distributedTreemap.innerHTML = '';
+                  chart = new ApexCharts(document.querySelector("#distributed-treemap"), options);
+                  chart.render();
+                  tbody.style.display = 'block';
+                  $("#collapseOne").slideToggle("slow");
+                  sessionStorage.setItem('grp1_selected', 'null');
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+    }
+});
+
+function ApexDatalabelText_selected(nth) {
+    var treemapContainer = document.getElementById('basic-treemap');
+    var apexDatalabelElements = treemapContainer.querySelectorAll('.apexcharts-datalabel');
+    return apexDatalabelElements[nth].innerHTML;
+}
+
+
+
+
+<!--<업무 유형 클릭했을 때>-->
+var distributedContainer = document.getElementById('distributed-treemap');
+
+distributedContainer.addEventListener('click', function(event) {
+    var clickedElement = event.target;
+
+    if (clickedElement.tagName !== 'rect') {
+        return;
+    }
+    sessionStorage.setItem('grp2_selected', 'null');
+    var biz_selected = sessionStorage.getItem('biz_selected');
+    var grp1_selected = sessionStorage.getItem('grp1_selected');
+    var tbody = document.getElementById('updatetasklist');
+    tbody.style.display = 'none';
+    $("#collapseOne").slideToggle("slow");
+    var listItems = document.querySelectorAll('#updatetasklist li');
+
+    listItems.forEach(function(li) {
+        li.style.display = 'none';
+    });
+    var selectedIndex = null;
+    var pathElements = Array.from(distributedContainer.querySelectorAll('rect'));
+    pathElements.forEach(function(pathElement, index) {
+        if (pathElement.getAttribute('selected') === 'true') {
+            selectedIndex = (index - 2);
+        }
+    });
+
+    if (selectedIndex !== null) {
+    var inputString = ApexDatalabelText_selected2(selectedIndex)
+    var dlElement = document.getElementById("updatetasklist");
+    var liElements = dlElement.getElementsByTagName("li");
+
+        for (var i = 0; i < liElements.length; i++) {
+            var currentLi = liElements[i];
+
+            var spanElements = currentLi.querySelectorAll("span[class*='badge']");
+            var concatenatedText = "";
+
+            for (var j = 0; j < spanElements.length; j++) {
+                concatenatedText += spanElements[j].innerText;
+            }
+
+            var grp1Null = (grp1_selected === 'null');
+            var bizNull = (biz_selected === 'null');
+
+            var allConditionsMet =
+                concatenatedText.includes(inputString) &&
+                (grp1Null || concatenatedText.includes(grp1_selected)) &&
+                (bizNull || concatenatedText.includes(biz_selected));
+
+            if (grp1_selected === 'null' && grp1Null === 'null') {
+                allConditionsMet = true;
+            }
+
+            if (allConditionsMet) {
+                currentLi.style.display = "block";
+            } else {
+                currentLi.style.display = "none";
+            }
+        }
+
+    } else {
+        var dlElement = document.getElementById("updatetasklist");
+        var liElements = dlElement.getElementsByTagName("li");
+        for (var i = 0; i < liElements.length; i++) {
+            var currentLi = liElements[i];
+
+            var spanElements = currentLi.querySelectorAll("span[class*='badge']");
+            var concatenatedText = "";
+
+            for (var j = 0; j < spanElements.length; j++) {
+                concatenatedText += spanElements[j].innerText;
+            }
+
+            var grp1Null = (grp1_selected === 'null');
+            var bizNull = (biz_selected === 'null');
+
+            var allConditionsMet =
+                (grp1Null || concatenatedText.includes(grp1_selected)) &&
+                (bizNull || concatenatedText.includes(biz_selected));
+
+            if (grp1_selected === 'null' && grp1Null === 'null') {
+                allConditionsMet = true;
+            }
+
+            if (allConditionsMet) {
+                currentLi.style.display = "block";
+            } else {
+                currentLi.style.display = "none";
+            }
+        }
+
+    }
+
+    var dlElement = document.getElementById("updatetasklist");
+
+    tbody.style.display = 'block';
+    $("#collapseOne").slideToggle("slow");
+});
+
+function ApexDatalabelText_selected2(nth) {
+    var distributedContainer = document.getElementById('distributed-treemap');
+    var apexDatalabelElements = distributedContainer.querySelectorAll('.apexcharts-datalabel');
+    return apexDatalabelElements[nth].innerHTML;
+}
+</script>
+<!--금일 RPA 수행 건 수 자동 업데이트-->
+<script>
+function getTotalexe() {
+    var orginNum = document.getElementById("cntEXE").innerText
+    var dataToSend = {
+        getTotal: 3
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/getrpaexecution/',
+        data: dataToSend,
+        headers: {
+            'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        },
+        success: function (response) {
+            var results = response.taskTotalcnt;
+            const $counter = document.querySelector(".count");
+            const max = results;
+
+            const counter = (max) => {
+                let now = orginNum;
+
+                const handle = setInterval(() => {
+                    now = Math.round(now);
+
+                    if (now <= max) {
+                        $counter.innerHTML = now;
+                    }
+
+                    const step = 1;
+
+                    now += step;
+
+                    if (now >= max) {
+                        $counter.innerHTML = max;
+                        clearInterval(handle);
+                    }
+                }, 10);
+            };
+
+            counter(max);
+            var tooltipElement = document.getElementById('tooltipforrpa');
+            var progress_count = response.progress_count;
+
+            if (progress_count === 0) {
+                tooltipElement.classList.remove('blink-animation');
+                deactivateTooltip();
+            } else {
+                tooltipElement.classList.add('blink-animation');
+                activateTooltip();
+            }
+
+        },
+        error: function (error) {
+            console.log('오류 발생: ', error);
+        }
+    });
+}
+
+getTotalexe();
+
+
+
+function getTotalexe_yesterday() {
+    var orginNum = document.getElementById("cntEXE_yesterday").innerText;
+    var dataToSend = {
+        getTotal: 3
+    };
+
+    // Fetch CSRF token
+    var csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+    $.ajax({
+        type: 'POST',
+        url: '/getrpaexecution_yesterday/',
+        data: dataToSend,
+        headers: {
+            'X-CSRFToken': csrfToken  // Use the fetched CSRF token
+        },
+        success: function (response) {
+            // Assuming response.taskTotalcnt_yesterday contains the desired value
+            var results = response.taskTotalcnt_yesterday;
+            orginNum = results;  // Update orginNum with the received value
+            // Optionally, update the DOM with the new value
+            document.getElementById("cntEXE_yesterday").innerText = orginNum;
+        },
+        error: function (error) {
+            console.log('Error occurred:', error);
+        }
+    });
+}
+
+
+getTotalexe_yesterday();
+setInterval(getTotalexe, 15000);
+
+
+function activateTooltip() {
+var tooltipElement = document.getElementById('tooltipforrpa');
+    var tooltip = new bootstrap.Tooltip(tooltipElement);
+}
+
+function deactivateTooltip() {
+var tooltipElement = document.getElementById('tooltipforrpa');
+    var tooltip = bootstrap.Tooltip.getInstance(tooltipElement);
+    if (tooltip) {
+        tooltip.dispose();
+    }
+}
+
+
+
+</script>
+<!--과제리스트 가져오기-->
+<script>
+function toggleCollapse() {
+    $("#collapseOne").slideToggle("fast");
+    }
+    function redirectTo(url) {
+        window.location.href = url;
+    }
+
+</script>
+</body>
+</html> 

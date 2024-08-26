@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>RPA PORTAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description"/>
+    <meta content="Coderthemes" name="author"/>
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+    <link href="{% static 'assets/vendor/datatables.net-bs5/css/dataTables.bootstrap5.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css' %}"
+          rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-fixedcolumns-bs5/css/fixedColumns.bootstrap5.min.css' %}"
+          rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-fixedheader-bs5/css/fixedHeader.bootstrap5.min.css' %}"
+          rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-select-bs5/css/select.bootstrap5.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <!-- Theme Config Js -->
+    <script src="{% static 'assets/js/hyper-config.js' %}"></script>
+    <!-- App css -->
+    <link href="{% static 'assets/css/app-saas.min.css' %}" rel="stylesheet" type="text/css" id="app-style"/>
+    <!-- Icons css -->
+    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/vendor/jstree/themes/default/style.min.css' %}" rel="stylesheet" type="text/css">
+
+    <!-- jstree js -->
+    <script src="{% static 'assets/vendor/jstree/jstree.min.js' %}"></script>
+    <script src="{% static 'assets/js/pages/demo.jstree.js' %}"></script>
+    <style>
+        .modal {
+          display: none;
+          z-index: 999999;
+        }
+
+        .modal-header {
+          cursor: grab;
+        }
+
+    </style>
+
+</head>
+
+<body>
+<!-- Pre-loader -->
+<div id="preloader">
+    <div id="status">
+        <div class="bouncing-loader">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+<!-- End Preloader-->
+
+<!-- Begin page -->
+<div class="wrapper">
+    {% include 'page/navbar_top.html' %}
+    {% include 'page/navbar_left.html' %}
+
+    <div class="content-page">
+        <div class="content">
+            {% csrf_token %}
+            <!-- Start Content-->
+            <div class="container-fluid">
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item">홈</li>
+                                    <li class="breadcrumb-item">그룹 전체 과제 둘러보기</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">그룹 전체 과제 둘러보기</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                {% csrf_token %}
+
+                                <div id="alt-pagination-preview">
+                                    <table id="alternative-page-datatable"
+                                           class="table table-striped dt-responsive table-hover nowrap w-100">
+                                        <thead>
+                                        <tr>
+                                            <th class="text-center">#</th>
+                                            <th class="text-center">과제명</th>
+                                            <th class="text-center">사업부</th>
+                                            <th class="text-center">업무군</th>
+                                            <th class="text-center">업무 유형</th>
+                                            <th class="text-center">업무 설명</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for p in totallist %}
+                                        <tr>
+                                            <td class="text-center">{{ p.id }}</td>
+                                            <td class="text-center">{{ p.taskname }}</td>
+                                            <td class="text-center">{{ p.business_type }}</td>
+                                            <td class="text-center" id="taskg1{{ p.id }}">
+                                            {% for g1 in taskg1 %}
+                                                {% if g1.contents in p.task_group1 %}
+                                                    <span class="badge bg-info" style="font-size: 13px;">{{ g1.contents }}</span>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            </td>
+                                            <td class="text-center">
+                                            {% for g2 in taskg2 %}
+                                                {% if g2.contents in p.task_group2 %}
+                                                    <span class="badge bg-info" style="font-size: 13px;">{{ g2.contents }}</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                            </td>
+                                            <td class="text-center">
+                                                <i class="mdi mdi-eye" style="font-size:18px;"
+                                                   type="button"
+                                                   data-bs-toggle="offcanvas"
+                                                   data-bs-target="#offcanvasTop{{ p.id }}"
+                                                   aria-controls="offcanvasTop"></i>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    {% for p in totallist %}
+                                    <div class="offcanvas offcanvas-top" id="offcanvasTop{{ p.id }}"
+                                         aria-labelledby="offcanvasTopLabel" style="text-align: left">
+                                        <div class="offcanvas-header">
+                                            <h5 id="offcanvasTopLabel">
+                                                <mark>{{ p.taskname }}</mark>
+                                            </h5>
+                                            <button type="button" class="btn-close text-reset"
+                                                    data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                                        </div>
+                                        <div class="offcanvas-body text-left">
+                                            <div class="row justify-content-center">
+                                                <div class="col-lg-7 col-md-9" title="horizontal-steps">
+                                                    <strong>업무 흐름:</strong>
+                                                    <div class="horizontal-steps mt-4 mb-4 pb-5" id="tooltip-container">
+                                                        <div class="horizontal-steps-content"
+                                                             id="progressinfo{{ p.id }}">
+                                                            <!-- Content for horizontal steps -->
+                                                        </div>
+                                                        <div class="process-line" style="width: 0%;"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-7 col-md-12" title="sm-steps" style="display: none;">
+                                                    <strong>업무 흐름:</strong>
+                                                    <ul id="ullist{{ p.id }}">
+                                                        <!-- Content for small steps -->
+                                                    </ul>
+                                                </div>
+                                                <div class="col-lg-1 col-md-12"></div>
+                                                <div class="col-lg-3 col-md-12 col-sm-12">
+<!--                                                    <strong>수행 이력: </strong>-->
+<!--                                                    <i class="ri-information-line" data-bs-toggle="modal"-->
+<!--                                                       data-bs-target="#myModal{{ p.id }}" id="info-icon{{ p.id }}"></i>-->
+<!--                                                    <br><br>-->
+                                                    <strong>등록 날짜: </strong>
+                                                    {{ p.created_date|date:'Y-m-d H:i' }}<br><br>
+                                                    <strong>업무 설명:</strong><br>
+                                                    <div class="scrollable-content" style="max-height: 100px; overflow-y: auto;">
+
+                                                    {{ p.taskexplanation|linebreaks }}<br>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="myModal{{ p.id }}" tabindex="-1"
+                                         aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">RPA 수행 내역 <small>(최근
+                                                        3개월 이내)</small></h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-7 align-items-center">
+                                                        &nbsp;&nbsp; 평균 소요 시간(분) : &nbsp;
+                                                        <div id="avetime{{ p.id }}"></div>
+                                                        <br>
+                                                        &nbsp;&nbsp; 월 평균 작업 횟수
+                                                        <div id="avetimes{{ p.id }}">test</div>
+                                                    </div>
+                                                    <div class="col-5">
+                                                        <div class="scrollable-content"
+                                                             style="max-height: 250px; overflow-y: auto;">
+                                                            <div class="modal-body" id="modal-body{{ p.id }}"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Close
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% endfor %}
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% include 'page/footer_bottom.html' %}
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Vendor js -->
+<script src="{% static 'assets/js/vendor.min.js' %}"></script>
+<!-- Code Highlight js -->
+<script src="{% static 'assets/vendor/highlightjs/highlight.pack.min.js' %}"></script>
+<script src="{% static 'assets/vendor/clipboard/clipboard.min.js' %}"></script>
+<script src="{% static 'assets/js/hyper-syntax.js' %}"></script>
+
+<!-- Datatables js -->
+<script src="{% static 'assets/vendor/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-bs5/js/dataTables.bootstrap5.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-responsive-bs5/js/responsive.bootstrap5.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-fixedcolumns-bs5/js/fixedColumns.bootstrap5.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-buttons-bs5/js/buttons.bootstrap5.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-buttons/js/buttons.flash.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-keytable/js/dataTables.keyTable.min.js' %}"></script>
+<script src="{% static 'assets/vendor/datatables.net-select/js/dataTables.select.min.js' %}"></script>
+
+<!-- App js -->
+<script src="{% static 'assets/js/app.min.js' %}"></script>
+
+<script>
+$('#alternative-page-datatable').DataTable( {
+  columnDefs: [
+    { orderable: false, targets: [2,3,4,5] }
+  ],
+  order: [[0, 'desc']],
+  "language": {
+    "zeroRecords":"조회된 내역이 없습니다.",
+    "paginate": {
+      "previous": '<i class="mdi mdi-chevron-left"></i>', // Set the previous option to your icon HTML
+      "next": '<i class="mdi mdi-chevron-right"></i>'
+    },
+  }
+});
+
+
+var detailInfo = [];
+var detailInfo = {{ detailinfojson|safe }};
+
+for (var i = 0; i < detailInfo.length; i++) {
+  var rpa_id = detailInfo[i].fields.rpa_id;
+  var jsonString = detailInfo[i].fields.progress_job;
+
+    var proginfo_chk = document.getElementById('progressinfo' + rpa_id);
+    if (proginfo_chk) {
+    var arr = JSON.parse(jsonString);
+
+    arr.forEach(function (item) {
+      var newHtml = `
+        <div class="step-item">
+          <span>${item}</span>
+        </div>
+      `;
+
+      var proginfo = document.getElementById('progressinfo' + rpa_id);
+      var tempDiv = document.createElement("div");
+      tempDiv.innerHTML = newHtml;
+
+      while (tempDiv.firstChild) {
+        proginfo.appendChild(tempDiv.firstChild);
+      }
+
+      var newHtml = `
+    <li>
+        ${item}
+    </li>
+      `;
+
+      var proginfo = document.getElementById('ullist' + rpa_id);
+      var tempDiv = document.createElement("div");
+      tempDiv.innerHTML = newHtml;
+
+      while (tempDiv.firstChild) {
+        proginfo.appendChild(tempDiv.firstChild);
+      }
+    });
+    }
+}
+
+
+
+
+
+
+</script>
+<!--RPA 프로세스 설명-->
+<script>
+    $(document).ready(function () {
+        $('[id^="info-icon"]').click(function () {
+            var pId = $(this).attr('id').replace('info-icon', '');
+            var dataToSend = {
+                pId: "RPA_" + pId
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/getIDSendList/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                var results = JSON.parse(response.jobdone_json);
+
+                var modalBody = document.getElementById("modal-body" + pId);
+                    while (modalBody.firstChild) {
+                        modalBody.removeChild(modalBody.firstChild);
+                    }
+
+                for (var i = 0; i < results.length; i++) {
+                    var result = results[i];
+
+                   var startDatetime = `${result.start_datetime}`.slice(0, 19);
+                    var newHtml =  `<ul>
+                        <li><mark>${startDatetime}</mark>
+                            <ul>
+                                <li>${result.activity_type}</li>
+                            </ul>
+                        </li></ul>`;
+
+                      var handleDragulaLeft = document.getElementById("modal-body" + pId);
+
+                      var tempDiv = document.createElement("ul");
+                      tempDiv.innerHTML = newHtml;
+
+                      while (tempDiv.firstChild) {
+                        handleDragulaLeft.appendChild(tempDiv.firstChild);
+                      }
+                }
+                var modalBody_avetime = document.getElementById("avetime" + pId);
+                modalBody_avetime.innerText = response.aveTime;
+                console.log(response.aveTime);
+
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+
+</script>
+
+<script>
+
+function handleWindowSizeChange() {
+    var windowWidth = window.innerWidth;
+
+    var elements = document.querySelectorAll('[title="horizontal-steps"]');
+    elements.forEach(function (element) {
+        if (windowWidth < 1000) {
+            element.style.display = 'none';
+        } else {
+            element.style.display = 'block';
+        }
+    });
+
+    var elements = document.querySelectorAll('[title="sm-steps"]');
+    elements.forEach(function (element) {
+        if (windowWidth < 1000) {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    });
+
+}
+
+
+window.addEventListener('load', handleWindowSizeChange);
+window.addEventListener('resize', handleWindowSizeChange);
+
+</script>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script>
+  $(function () {
+    $('.modal-dialog').draggable({
+      handle: ".modal-header"
+    });
+  });
+</script>
+
+</body>
+</html>

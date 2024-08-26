@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <title> RPA PORTAL </title>
+    <link rel="stylesheet" href="{% static 'assets/vendor/jquery-toast-plugin/jquery.toast.min.css' %}">
+        {% include 'page/head_basic_scripts.html' %}
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+    <link href="{% static 'assets/vendor/datatables.net-bs5/css/dataTables.bootstrap5.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css' %}"
+          rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-fixedcolumns-bs5/css/fixedColumns.bootstrap5.min.css' %}"
+          rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-fixedheader-bs5/css/fixedHeader.bootstrap5.min.css' %}"
+          rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-buttons-bs5/css/buttons.bootstrap5.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+    <link href="{% static 'assets/vendor/datatables.net-select-bs5/css/select.bootstrap5.min.css' %}" rel="stylesheet"
+          type="text/css"/>
+
+    <style>
+    .modal-header {
+      cursor: grab;
+    }
+    </style>
+
+</head>
+
+<body>
+<!-- Pre-loader -->
+<div id="preloader">
+    <div id="status">
+        <div class="bouncing-loader">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+</div>
+<!-- End Preloader-->
+
+<!-- Begin page -->
+<div class="wrapper">
+    {% include 'page/navbar_top.html' %}
+    {% include 'page/navbar_left.html' %}
+    <div class="content-page">
+        <div class="content">
+
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item">RPA 현황</li>
+                                    <li class="breadcrumb-item">RPA 개발</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">RPA 접수 과제</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class="row">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                개발 완료 전까지 보여져야 함
+                                <div class="table-responsive">
+                                    <table class="table table-centered table-nowrap table-hover mb-0">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center" style="width: 25px;">과제번호</th>
+                                            <th class="text-center">과제명</th>
+                                            <th class="text-center" style="width: 10%;">담당자</th>
+                                            <th class="text-center">요청일자</th>
+                                            <th class="text-center">진행 상태</th>
+                                            <th class="text-center" style="width: 125px;">개발 계획</th>
+                                            <th class="text-center" style="width: 100px;">중단 작업</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for task in tasklist %}
+                                        <tr>
+                                            <td class="text-center">
+                                                <a href="apps-ecommerce-orders-details.html" class="text-body fw-bold">
+                                                    {{ task.id }}
+                                                </a>
+                                            </td>
+                                            <td class="text-center">
+                                                <h5 class="my-0">
+                                                                <a class="link-secondary link-offset-2 link-opacity-50-hover"
+                                                                   href="/taskList/{{ task.id }}/?chkf=dev">
+                                                                    {{ task.taskname }}
+                                                                </a>
+                                                                </h5>
+                                            </td>
+                                            <td class="text-center">
+                                                <p id="manager_name{{ task.id }}" class="my-0"></p>
+
+                                            </td>
+                                            <td class="text-center">
+                                                <p class="my-0">{{ task.created_date|date:'Y-m-d H:i' }}</p>
+                                            </td>
+                                            <td class="text-center">
+                                                <h5 class="my-0">{{ task.progress_status }}</h5>
+                                            </td>
+                                            <td class="text-center">
+                                                <i type="button" class="mdi mdi-square-edit-outline"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#bs-example-modal-lg{{ task.id }}"
+                                                   style="font-size: 17px;">
+                                                </i>
+                                                <div class="modal fade" id="bs-example-modal-lg{{ task.id }}"
+                                                     tabindex="-1"
+                                                     role="dialog" aria-labelledby="myLargeModalLabel{{ task.id }}"
+                                                     aria-hidden="true" data-bs-backdrop="static"
+                                                     data-bs-keyboard="false">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title"
+                                                                    id="myLargeModalLabel{{ task.id }}">
+                                                                    {{ task.taskname }} </h4>&nbsp;&nbsp; <small style="text-align:left">
+                                                                {{ task.id }}</small>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-hidden="true"></button>
+                                                            </div>
+                                                            <div class="modal-body" style="text-align:left">
+
+                                                                <div class="mt-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <div class="form-check form-check-inline">
+
+                                                                        {% for detail in detail_info %}
+                                                                            {% if task.id|stringformat:"s" in detail.rpa_id|stringformat:"s"  and 'Y' in detail.rpamanager_chk %}
+                                                                                <input type="checkbox" class="form-check-input"
+                                                                                id="customCheck1{{ task.id }}" checked disabled>
+                                                                                <label class="form-check-label"
+                                                                                       for="customCheck1{{ task.id }}">
+                                                                                    과제 접수 확인
+                                                                                </label>
+                                                                            {% elif task.id|stringformat:"s" in detail.rpa_id|stringformat:"s"  and 'N' in detail.rpamanager_chk %}
+                                                                                <input type="checkbox" class="form-check-input"
+                                                                                id="customCheck1{{ task.id }}">
+                                                                                <label class="form-check-label"
+                                                                                       for="customCheck1{{ task.id }}">
+                                                                                    과제 접수 확인
+                                                                                </label>
+                                                                            {% endif %}
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                    <hr>
+                                                                    <div class="form-check form-check-inline">
+                                                                        <div class="mb-3 position-relative"
+                                                                             id="datepicker{{ task.id }}">
+                                                                            <label class="form-label">과제 분석(인터뷰) 완료</label>
+                                                                            {% for detail in detail_info %}
+                                                                            {% if task.id|stringformat:"s" in detail.rpa_id|stringformat:"s" %}
+                                                                                <input type="text" class="form-control"
+                                                                                   data-provide="datepicker"
+                                                                                   data-date-autoclose="true"
+                                                                                   data-date-container="#datepicker{{ task.id }}"
+                                                                                   data-date-format="yyyy-mm-dd"
+                                                                                   id="datetime{{ task.id }}"
+                                                                                   value="{{ detail.analyze_date }}"
+                                                                            >
+                                                                            {% endif %}
+                                                                        {% endfor %}
+
+                                                                        </div>
+                                                                    </div>
+                                                                    <hr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                    <label class="form-label">업무 설계</label>
+                                                                    <div class="row" data-plugin="dragula"
+                                                                         data-containers='["handle-dragula-left{{ task.id }}", "handle-dragula-right"]'
+                                                                         data-handleClass="dragula-handle">
+                                                                        <div class="col-md-12">
+
+                                                                            <div class="bg-dragula p-2 p-lg-4" id="progresslist{{ task.id }}">
+                                                                                <p class="mt-0" style="font-size: 16px;">
+                                                                                    RPA 개발 단계
+                                                                                    <i class="ri ri-add-box-line" id="insertnewline" onclick="addjob({{ task.id }});"
+                                                                                       style="float: right;"></i>
+                                                                                </p>
+
+                                                                                <div class="scrollable-content" style="max-height: 400px; overflow-y: auto;">
+                                                                                    <div id="handle-dragula-left{{ task.id }}" class="py-2">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button id="btnsave{{ task.id }}" type="button" class="btn btn-primary" onclick="updatetaskstatus({{ task.id }});">
+                                                                    저장
+                                                                </button>
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <i type="button" class="mdi mdi-square-edit-outline"
+                                                   data-bs-toggle="modal"
+                                                   data-bs-target="#taskmanage-modal{{ task.id }}"
+                                                   style="font-size: 17px;">
+                                                </i>
+                                            </td>
+                                        </tr>
+                                        <div id="taskmanage-modal{{ task.id }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title" id="standard-modalLabel">{{ task.taskname }}<a style="font-size: 12px;"> - {{ task.id }}</a></h4>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label for="select-status{{ task.id }}" class="form-label">RPA 개발 상태 변경</label>
+                                                                    <select class="form-select" id="select-status{{ task.id }}">
+                                                                        <option selected disabled>선택</option>
+                                                                        <option>개발보류</option>
+                                                                        <option>개발중단</option>
+                                                                    </select>
+
+                                                                </div>
+                                                                <label class="form-label">변경 사유</label>
+                                                                <textarea class="form-control form-control-light mb-2" placeholder="작성"
+                                                                  id="textarea-reason{{ task.id }}" rows="3"></textarea>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">닫기</button>
+                                                                <button type="button" class="btn btn-primary" onclick="savestatus({{ task.id }})">저장</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                        {% endfor %}
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div> <!-- end card-body-->
+                        </div> <!-- end card-->
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+            </div> <!-- container -->
+        </div> <!-- content -->
+
+        <!-- Footer Start -->
+        {% include 'page/footer_bottom.html' %}
+        <!-- end Footer -->
+    </div>
+</div>
+<!-- END wrapper -->
+
+
+<!-- 업무 설계 단계 추가 -->
+<script>
+function addjob(idx) {
+  var newHtml = `
+    <div class="card mb-0 mt-2 clickable-card">
+      <div class="card-body">
+        <div class="d-flex align-items-start">
+          <div style="display: grid; place-items: center; margin: 0 auto;">
+            <input class="form-check-input me-1" type="checkbox" id="firstCheckbox">
+          </div>&nbsp;&nbsp;&nbsp;&nbsp;
+          <input type="text" id="simpleinput" class="form-control" style="width: 500px;">&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <div style="display: grid; place-items: center; height: 3vh; font-size: 18px;">
+            <i class="mdi mdi-trash-can-outline" style="visibility: hidden;"></i>
+          </div>
+          <span class="dragula-handle"></span>
+        </div>
+      </div>
+    </div>
+  `;
+  var handleDragulaLeft = document.getElementById("handle-dragula-left" + idx);
+
+  var tempDiv = document.createElement("div");
+  tempDiv.innerHTML = newHtml;
+
+  while (tempDiv.firstChild) {
+    handleDragulaLeft.appendChild(tempDiv.firstChild);
+  }
+}
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!--휴지통 보이게 하기-->
+<script>
+document.addEventListener("click", function(event) {
+    var clickableCards = document.querySelectorAll(".dragula-handle");
+
+    clickableCards.forEach(function(card, index) {
+        if (card.contains(event.target)) {
+            var icons = document.querySelectorAll('i.mdi.mdi-trash-can-outline');
+            var firstIcon = icons[index];
+            firstIcon.style.visibility = (firstIcon.style.visibility === "hidden") ? "visible" : "hidden";
+        }
+    });
+});
+
+
+<!--휴지통 클릭 시 업무 설계 단계 삭제하기-->
+document.addEventListener("click", function(event) {
+    var trashcans = document.querySelectorAll('i.mdi.mdi-trash-can-outline');
+    trashcans.forEach(function(can, index) {
+        if (can.contains(event.target)) {
+        var cards = document.querySelectorAll('.card.mb-0.mt-2.clickable-card');
+            if (cards.length > 0) {
+                var Card = cards[index];
+                Card.remove();
+            }
+        }
+    });
+});
+</script>
+
+<!--과제 저장하기-->
+<script>
+function updatetaskstatus(idx) {
+
+    var datetime = document.querySelector('#datetime' + idx).value;
+
+    var container = document.getElementById("progresslist"  + idx);
+    var inputs = container.getElementsByTagName("input");
+
+    var values = [];
+    var values_chk = [];
+
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].type === "text" && inputs[i].value !== '') {
+        values.push(inputs[i].value);
+      }
+    }
+
+    for (var i = 0; i < inputs.length; i++) {
+      if (inputs[i].type === "checkbox") {
+        var checkbox = inputs[i];
+        if (inputs[i + 1].type === "text" && inputs[i + 1].value !== '') {
+          if (checkbox.checked) {
+              values_chk.push("Y");
+            } else {
+              values_chk.push("N");
+            };
+         }
+      }
+    }
+
+    var checkbox = document.getElementById('customCheck1' + idx);
+    if (checkbox.checked) {
+        var strcheck = "Y";
+    } else {
+        var strcheck = "N";
+    }
+
+    let tableData = [];
+    let rowData = {};
+
+    rowData.rpaid = idx;
+    rowData.check = strcheck;
+    rowData.date = datetime.trim();
+    var progresslist = JSON.stringify(values);
+    if (values.length === 0) {
+      var progresslist = "";
+      var progresslist_chk = "";
+    } else {
+      var progresslist = JSON.stringify(values);
+      var progresslist_chk = JSON.stringify(values_chk);
+    }
+
+    rowData.progresslist = progresslist;
+    rowData.progresslist_chk = progresslist_chk;
+
+    tableData.push(rowData);
+    $('#bs-example-modal-lg' + idx).modal('toggle');
+  fetch('/updatestatus/', {
+    method: 'POST',
+    body: JSON.stringify(tableData),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    },
+  })
+    .then(() => {
+      setTimeout(() => {
+
+        location.reload();
+      }, 500); // 3 seconds delay before reloading the page
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+
+</script>
+<script>
+    var detailInfo = [];
+    var detailInfo = {{ detailinfojson|safe }};
+
+    for (var i = 0; i < detailInfo.length; i++) {
+        var counter = 0;
+        var jsonString = detailInfo[i].fields.progress_job;
+
+      if (!jsonString) {
+          continue;
+      }
+        var jsonString_done = detailInfo[i].fields.progress_job_done;
+        var rpa_id = detailInfo[i].fields.rpa_id;
+        var arr = JSON.parse(jsonString);
+        var arrDone = JSON.parse(jsonString_done);
+
+        arr.forEach(function(item) {
+
+        var isChecked = false;
+        <!--여기가 업무 순서 추가 하는 부분-->
+        var chkboolean = arrDone[counter];
+        if (chkboolean == 'Y'){
+           var isChecked = true;
+        }
+
+        var newHtml = `
+          <div class="card mb-0 mt-2 clickable-card">
+            <div class="card-body">
+              <div class="d-flex align-items-start">
+                <div style="display: grid; place-items: center; margin: 0 auto;">
+                  <input class="form-check-input me-1" type="checkbox" id="firstCheckbox" ${isChecked ? 'checked' : ''}>
+                </div>&nbsp;&nbsp;&nbsp;&nbsp;
+                <input type="text" id="simpleinput" class="form-control" style="width: 500px;" value='${item}'>&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <div style="display: grid; place-items: center; height: 3vh; font-size: 18px;">
+                  <i class="mdi mdi-trash-can-outline" style="visibility: hidden;"></i>
+                </div>
+                <span class="dragula-handle"></span>
+              </div>
+            </div>
+          </div>
+        `;
+          counter++;
+          var handleDragulaLeft = document.getElementById("handle-dragula-left" + rpa_id);
+
+          var tempDiv = document.createElement("div");
+          tempDiv.innerHTML = newHtml;
+
+          while (tempDiv.firstChild) {
+            handleDragulaLeft.appendChild(tempDiv.firstChild);
+          }
+
+        <!--여기가 업무 순서 추가 하는 부분 End-->
+
+        });
+    }
+
+
+    var TaskInfo = [];
+    var TaskInfo = {{ tasklist_json|safe }};
+    for (var i = 0; i < TaskInfo.length; i++) {
+        var counter = 0;
+        var jsonString = TaskInfo[i].fields.manager_name;
+        var jsonString_empno = TaskInfo[i].fields.manager_empno;
+        var rpa_id = TaskInfo[i].pk;
+
+        var arr2 = JSON.parse(jsonString);
+        var arr_empno = JSON.parse(jsonString_empno);
+
+        arr2.forEach(function(item) {
+
+        var newHtml = `
+          <span class="badge bg-primary"
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          data-bs-title="${arr_empno[counter]}"
+          >
+          ${item}
+          </span>
+        `;
+        counter++;
+
+
+        var manager_name = document.getElementById("manager_name" + rpa_id);
+
+        var tempDiv = document.createElement("span");
+        tempDiv.innerHTML = newHtml;
+
+        while (tempDiv.firstChild) {
+        manager_name.appendChild(tempDiv.firstChild);
+        }
+        })
+
+    }
+</script>
+<!-- Vendor js -->
+<script src="{% static 'assets/js/vendor.min.js' %}"></script>
+<!-- App js -->
+<script src="{% static 'assets/js/app.min.js' %}"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- Bootstrap Datepicker js -->
+<script src="{% static 'assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'assets/vendor/dragula/dragula.min.js' %}"></script>
+<script src="{% static 'assets/js/ui/component.dragula.js' %}"></script>
+<!-- Toastr Demo js -->
+<script src="{% static 'assets/vendor/jquery-toast-plugin/jquery.toast.min.js' %}"></script>
+<script src="{% static 'assets/js/pages/demo.toastr.js' %}"></script>
+<script>
+function savestatus(pId) {
+        var statusinput = document.querySelector("#select-status" + pId).value
+        var reason = document.querySelector("#textarea-reason" + pId).value;
+        if (statusinput === '운영재개') {
+            statusinput = '개발완료'
+        }
+        if (statusinput === '선택' || reason === '') {
+            warningnotification_comment();
+            return;
+        }
+
+        var dataToSend = {
+            pId: pId,
+            statusinput: statusinput,
+            reason: reason
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/updatemanagetaskstatus/',
+            data: dataToSend,
+            headers: {
+            'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+            success: function (response) {
+                $('#taskmanage-modal' + pId).modal('toggle');
+                location.reload();
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+};
+
+function warningnotification_comment() {
+    $.NotificationApp.send("오류","입력된 값이 없습니다","top-right","Background color","error")
+}
+
+</script>
+<script>
+  $(function () {
+    $('.modal-dialog').draggable({
+      handle: ".modal-header"
+    });
+  });
+</script>
+</body>
+</html>

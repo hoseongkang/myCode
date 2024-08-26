@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+
+<head>
+
+    <meta charset="utf-8"/>
+    <title> RPA PORTAL </title>
+    <link rel="stylesheet" href="{% static 'assets/vendor/jquery-toast-plugin/jquery.toast.min.css' %}">
+    {% include 'page/head_basic_scripts.html' %}
+</head>
+
+<body>
+        <!-- Pre-loader -->
+        <div id="preloader">
+            <div id="status">
+                <div class="bouncing-loader"><div ></div><div ></div><div ></div></div>
+            </div>
+        </div>
+        <!-- End Preloader-->
+<!-- Begin page -->
+<div class="wrapper">
+    {% include 'page/navbar_top.html' %}
+    {% include 'page/navbar_left.html' %}
+
+    <div class="content-page">
+        <div class="content">
+            {% csrf_token %}
+            <!-- Start Content-->
+            <div class="container-fluid">
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item">RPA과제</li>
+                                    <li class="breadcrumb-item">과제 신청하기</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title" title="pk_data" id="{{ pk_data }}">과제 신청하기</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+
+                                <div class="row">
+                                    <div class="col-xl-6">
+                                        <div class="mb-0">
+                                            <label for="project-overview" class="form-label">담당자</label>
+                                            <select class="select2 form-control select2-multiple"
+                                                    data-toggle="select2" id="mySelect"
+                                                    multiple="multiple" data-placeholder="검색">
+                                                {% for item in rows_dt %}
+                                                {% if item.EMPNO in EMPNO_SYC %}
+                                                <option selected value="{{ item.EMPNO }}"
+                                                        title="{{ item.NAME_KO }} {{ item.CLNM }} | {{ item.CO_NM }} | {{ item.NAME_EN }}">
+                                                    {{ item.NAME_KO }} | {{ item.NAME_EN }}
+                                                </option>
+                                                {% else %}
+                                                <option value="{{ item.EMPNO }}"
+                                                        title="{{ item.NAME_KO }} {{ item.CLNM }} | {{ item.CO_NM }} | {{ item.NAME_EN }}">
+                                                    {{ item.NAME_KO }} | {{ item.NAME_EN }}
+                                                </option>
+                                                {% endif %}
+
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <br>
+                                        <div class="mb-3">
+                                            <label class="form-label">과제명</label>
+                                                <small class="text-muted">*최대 길이 25자</small>
+                                            <input id="taskname" type="text" class="form-control" maxlength="25"
+                                                   data-toggle="maxlength" placeholder="과제명 입력">
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="taskexplanation" class="form-label">업무 설명</label>
+                                            <textarea id="taskexplanation" data-toggle="maxlength"
+                                                      class="form-control"
+                                                      maxlength="225" rows="3"
+                                                      placeholder="업무 내용"
+                                                      style="text-transform: none !important; white-space:pre-line;"
+                                            ></textarea>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="simpleinput1" class="form-label">총 작업 인원</label>
+                                                    <input type="number" id="simpleinput1" class="form-control">
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label for="simpleinput2" class="form-label">인당 작업 시간 (*분)</label>
+                                                    <input type="number" id="simpleinput2" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="project-overview" class="form-label">자동화 방식</label>
+                                            <ul class="list-group">
+                                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                    <input class="form-check-input me-1" type="radio"
+                                                           name="listGroupRadio" value="" id="firstRadio" checked>
+                                                    <label class="form-check-label" for="firstRadio">지정된 시간
+                                                    </label>
+
+                                                    <div>
+                                                        <i class="ri-information-line"
+                                                           type="button"
+                                                           data-bs-toggle="offcanvas"
+                                                           data-bs-target="#offcanvasRight"
+                                                           aria-controls="offcanvasRight"
+                                                           style="font-size: 17px;"></i>
+
+                                                        <div class="offcanvas offcanvas-end" tabindex="-1"
+                                                             id="offcanvasRight"
+                                                             aria-labelledby="offcanvasRightLabel">
+                                                            <div class="offcanvas-header">
+                                                                <h5 id="offcanvasRightLabel">
+                                                                    <mark>[지정된 시간]</mark>
+                                                                </h5>
+                                                                <button type="button" class="btn-close text-reset"
+                                                                        data-bs-dismiss="offcanvas"
+                                                                        aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="offcanvas-body">
+                                                                <div>
+                                                                    RPA Bot이 미리 설정한 시간에 맞춰 반복 수행
+                                                                </div>
+                                                                <h5 class="mt-3">예시</h5>
+                                                                <ul class="ps-3">
+                                                                    <li class="">매일 오전 9시 반복 수행 (*영업일 포함 혹은 제외)
+                                                                    </li>
+                                                                    <li class="">매일 9시, 13시, 18시 수행</li>
+                                                                    <li class="">매주 월요일 오후 3시 수행</li>
+                                                                    <li class="">매월 1~3영업일 반복 수행
+                                                                    </li>
+                                                                </ul>
+                                                                <br>
+                                                                <hr>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <div class="timeline" dir="ltr"
+                                                                             style="font-size: 11px;">
+
+                                                                            <div class="timeline-show mb-3 text-center">
+                                                                                <h5 class="m-0 time-show-name"
+                                                                                    style="font-size: 13px; background-color: #FFF2CC;">
+                                                                                    오전 9시 RPA
+                                                                                    수행 시작</h5>
+                                                                            </div>
+
+                                                                            <div class="timeline-lg-item timeline-item-left">
+                                                                                <div class="timeline-desk">
+                                                                                    <div class="timeline-box">
+                                                                                        <span class="arrow-alt"></span>
+                                                                                        <span class="timeline-icon"><i
+                                                                                                class="mdi mdi-adjust"></i></span>
+                                                                                        <h4 class="mt-0 mb-1 font-11">
+                                                                                            시스템 접속</h4>
+                                                                                        <p>Excel 다운로드</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="timeline-lg-item timeline-item-right">
+                                                                                <div class="timeline-desk">
+                                                                                    <div class="timeline-box">
+                                                                                        <span class="arrow"></span>
+                                                                                        <span class="timeline-icon"><i
+                                                                                                class="mdi mdi-adjust"></i></span>
+                                                                                        <h4 class="mt-0 mb-1 font-11">
+                                                                                            Excel 가공</h4>
+                                                                                        <p>보고서 생성</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <div class="timeline-lg-item timeline-item-left">
+                                                                                <div class="timeline-desk">
+                                                                                    <div class="timeline-box">
+                                                                                        <span class="arrow-alt"></span>
+                                                                                        <span class="timeline-icon"><i
+                                                                                                class="mdi mdi-adjust"></i></span>
+                                                                                        <h4 class="mt-0 mb-1 font-11">
+                                                                                            RPA 메일 발송
+                                                                                        </h4>
+                                                                                        <p>보고서 발송</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="timeline-show my-3 text-center">
+                                                                                <h5 class="m-0 time-show-name"
+                                                                                    style="font-size: 13px;">
+                                                                                    RPA 수행 완료</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                        <!-- end timeline -->
+                                                                    </div> <!-- end col -->
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                    <input class="form-check-input me-1" type="radio"
+                                                           name="listGroupRadio" value="" id="secondRadio">
+                                                    <label class="form-check-label" for="secondRadio">내가 원할 때
+                                                    </label>
+                                                    <div>
+                                                        <i class="ri-information-line"
+                                                           type="button"
+                                                           data-bs-toggle="offcanvas"
+                                                           data-bs-target="#offcanvasRight1"
+                                                           aria-controls="offcanvasRight1"
+                                                           style="font-size: 17px;"></i>
+
+                                                        <div class="offcanvas offcanvas-end" tabindex="-1"
+                                                             id="offcanvasRight1"
+                                                             aria-labelledby="offcanvasRightLabel1">
+                                                            <div class="offcanvas-header">
+                                                                <h5 id="offcanvasRightLabel1">
+                                                                    <mark>[내가 원할 때]</mark>
+                                                                </h5>
+                                                                <button type="button" class="btn-close text-reset"
+                                                                        data-bs-dismiss="offcanvas"
+                                                                        aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="offcanvas-body">
+                                                                <div>
+                                                                    RPA Bot에게 직접 메일 발송으로 RPA 업무 시작 요청
+                                                                </div>
+                                                                <h5 class="mt-3">수행 방법</h5>
+                                                                <ul class="ps-3">
+                                                                    <li class="">메일 작성
+                                                                        <br>1. 메일 제목 : "RPA_XXX"
+                                                                        <mark>특정 값</mark>
+                                                                        포함된 제목
+                                                                        <br>2. 첨부 파일 (필요한 경우)
+                                                                    </li>
+                                                                    <li class="">RPA Bot 계정으로 메일 발송</li>
+                                                                    <li class="">RPA 요청 메일 수신 확인 후 업무 시작</li>
+                                                                </ul>
+
+
+                                                                <br>
+                                                                <hr>
+                                                                <br>
+
+                                                                <div class="row">
+                                                                    <div class="col-12">
+                                                                        <div class="timeline" dir="ltr"
+                                                                             style="font-size: 11px;">
+
+                                                                            <div class="timeline-show mb-3 text-center">
+                                                                                <h5 class="m-0 time-show-name"
+                                                                                    style="font-size: 13px; background-color: #FFF2CC;">
+                                                                                    담당자가 RPA로 메일 발송</h5>
+                                                                            </div>
+
+                                                                            <div class="timeline-show mb-3 text-center">
+                                                                                <h5 class="m-0 time-show-name"
+                                                                                    style="font-size: 13px;">RPA 수행
+                                                                                    시작</h5>
+                                                                            </div>
+
+
+                                                                            <div class="timeline-lg-item timeline-item-left">
+                                                                                <div class="timeline-desk">
+                                                                                    <div class="timeline-box">
+                                                                                        <span class="arrow-alt"></span>
+                                                                                        <span class="timeline-icon"><i
+                                                                                                class="mdi mdi-adjust"></i></span>
+                                                                                        <h4 class="mt-0 mb-1 font-11">
+                                                                                            시스템 접속</h4>
+                                                                                        <p>Excel 다운로드</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="timeline-lg-item timeline-item-right">
+                                                                                <div class="timeline-desk">
+                                                                                    <div class="timeline-box">
+                                                                                        <span class="arrow"></span>
+                                                                                        <span class="timeline-icon"><i
+                                                                                                class="mdi mdi-adjust"></i></span>
+                                                                                        <h4 class="mt-0 mb-1 font-11">
+                                                                                            Excel 가공</h4>
+                                                                                        <p>보고서 생성</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+
+                                                                            <div class="timeline-lg-item timeline-item-left">
+                                                                                <div class="timeline-desk">
+                                                                                    <div class="timeline-box">
+                                                                                        <span class="arrow-alt"></span>
+                                                                                        <span class="timeline-icon"><i
+                                                                                                class="mdi mdi-adjust"></i></span>
+                                                                                        <h4 class="mt-0 mb-1 font-11">
+                                                                                            RPA 메일 발송
+                                                                                        </h4>
+                                                                                        <p>보고서 발송</p>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="timeline-show my-3 text-center">
+                                                                                <h5 class="m-0 time-show-name"
+                                                                                    style="font-size: 13px;">
+                                                                                    RPA 수행 완료</h5>
+                                                                            </div>
+                                                                        </div>
+                                                                        <!-- end timeline -->
+                                                                    </div> <!-- end col -->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                                    <input class="form-check-input me-1" type="radio"
+                                                           name="listGroupRadio" value="" id="thirdRadio">
+                                                    <label class="form-check-label" for="thirdRadio">둘 다
+                                                    </label>
+                                                    <div>
+                                                        <i class="ri-information-line"
+                                                           type="button"
+                                                           data-bs-toggle="offcanvas"
+                                                           data-bs-target="#offcanvasRight1"
+                                                           aria-controls="offcanvasRight1"
+                                                           style="font-size: 17px; display: None;"></i>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-6">
+                                        <div class="mb-0">
+                                            <label for="bizgrp" class="form-label">사업부</label>
+                                            <select class="form-select mb-3" id="bizgrp">
+                                                <option selected>선택</option>
+                                                <option value="식품">식품</option>
+                                                <option value="화학">화학</option>
+                                                <option value="바이오">바이오</option>
+                                                <option value="패키징">패키징</option>
+                                                <option value="Staff">Staff</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-0">
+                                            <label for="project-overview" class="form-label">업무군</label>
+                                            <select class="select2 form-control select2-multiple"
+                                                    data-toggle="select2" id="mySelect_type2"
+                                                    multiple="multiple" data-placeholder="선택">
+                                                {% for g1 in master_dt_g1 %}
+                                                <option value="{{ forloop.counter }}">{{ g1.contents }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <br>
+                                        <div class="mb-0">
+                                            <label for="project-overview" class="form-label">업무 유형</label>
+                                            <select class="select2 form-control select2-multiple"
+                                                    data-toggle="select2" id="mySelect_type3"
+                                                    multiple="multiple" data-placeholder="선택">
+                                                {% for g2 in master_dt_g2 %}
+                                                <option value="{{ forloop.counter }}">{{ g2.contents }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <br>
+
+
+                                        <br>
+                                        <div class="mb-3 mt-3 mt-xl-0" id="update-alert-container">
+                                            <label for="projectname" class="mb-0">파일 첨부</label>
+
+                                            <ul><small>
+                                                <li>
+                                                    RPA 담당자가 개발 시 참고할 수 있는 파일 첨부
+                                                </li>
+                                                <li>
+                                                    자동화를 원하는 업무의 순서대로 정의
+                                                </li>
+                                            </small></ul>
+                                            <a id="rpaprocesspptx" onclick="downloadFile();" href="#">
+                                                <mark>RPA 업무 프로세스 정의서.pptx</mark>
+                                            </a><small style="color: red;">  *필수 아님</small>
+                                            <br>
+                                            <br>
+                                            <div class="scrollable-content"
+                                                 style="max-height: 500px; overflow-y: auto;">
+                                                <!-- File Upload -->
+                                                <form action="/uploadfiles/" method="post" class="dropzone"
+                                                      id="my-dropzone-element-id"
+                                                      data-plugin="dropzone" data-previews-container="#file-previews"
+                                                      data-upload-preview-template="#uploadPreviewTemplate">
+                                                    {% csrf_token %}
+                                                     <input type="hidden" name="custom_value" value="{{ pk_data }}">
+                                                    <div class="fallback">
+                                                        <input name="file" type="file" multiple/>
+                                                    </div>
+                                                    <div class="dz-message needsclick">
+                                                        <i class="h1 text-muted ri-upload-cloud-2-line"></i>
+                                                        <h3>파일 첨부</h3>
+                                                        <span class="text-muted font-13">Drop / Click</span>
+                                                    </div>
+                                                </form>
+
+                                                <!-- Preview -->
+                                                <div class="dropzone-previews mt-3" id="file-previews"></div>
+
+                                                <!-- file preview template -->
+                                                <div class="d-none" id="uploadPreviewTemplate">
+                                                    <div class="card mt-1 mb-0 shadow-none border">
+                                                        <div class="p-2">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-auto">
+                                                                    <img data-dz-thumbnail src="#"
+                                                                         class="avatar-sm rounded bg-light" alt="">
+                                                                </div>
+                                                                <div class="col ps-0">
+                                                                    <a href="javascript:void(0);"
+                                                                       class="text-muted fw-bold"
+                                                                       data-dz-name></a>
+                                                                    <p class="mb-0" data-dz-size></p>
+                                                                </div>
+                                                                <div class="col-auto">
+                                                                    <!-- Button -->
+                                                                    <a
+                                                                            class="btn btn-link btn-lg text-muted"
+                                                                            data-dz-remove>
+                                                                        <i class="ri-close-line"
+                                                                           onclick="myFunction(event)"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="d-grid">
+                                            <button id="showElementButton" type="submit" class="btn btn-lg btn-info"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom"
+                                                    title="신청 후 내용 수정 가능"
+                                                    style="display: flex; align-items: center; justify-content: center;"
+                                                    onclick="createnewproject()"
+                                            >
+                                                <div class="mb-0 mr-2" style="font-size: 20px;">
+                                                    <strong>신청하기</strong>
+                                                </div>
+                                            </button>
+
+                                            <div id="success-alert-modal" class="modal fade" tabindex="-1" role="dialog"
+                                                 aria-hidden="true" data-bs-backdrop="static">
+                                                <div class="modal-dialog modal-sm">
+                                                    <div class="modal-content modal-filled bg-success">
+                                                        <div class="modal-body p-4">
+                                                            <div class="text-center">
+                                                                <i class="ri-check-line h1"></i>
+                                                                <h4 class="mt-2">신청 완료</h4>
+                                                                <p class="mt-3">
+                                                                    접수된 내용을 토대로 RPA 담당자가 검토 예정입니다.
+                                                                </p>
+                                                                <button type="button" class="btn btn-light my-2"
+                                                                        data-bs-dismiss="modal" id="gotomytask"
+                                                                        onclick="gotomytask()">접수 확인하기
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div><!-- /.modal-content -->
+                                                </div><!-- /.modal-dialog -->
+                                            </div><!-- /.modal -->
+                                        </div>
+
+                                    </div> <!-- end col-->
+                                </div>
+                                <!-- end row -->
+                                <br><br><br>
+                                <div class="mt-2" id="tooltip-container1">
+                                    <h5>*RPA 진행 단계 요약</h5>
+                                </div>
+
+                                <hr>
+
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-7 col-md-10 col-sm-11">
+
+                                        <div class="horizontal-steps mt-4 mb-4 pb-5" id="tooltip-container">
+                                            <div class="horizontal-steps-content">
+                                                <div class="step-item current">
+                                                    <span data-bs-container="#tooltip-container"
+                                                          data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                          title="업무 담당자 과제 신청">과제 신청</span>
+                                                </div>
+                                                <div class="step-item">
+                                                    <span data-bs-container="#tooltip-container"
+                                                          data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                          title="RPA담당자 과제 접수">과제 접수</span>
+                                                </div>
+                                                <div class="step-item">
+                                                    <span data-bs-container="#tooltip-container"
+                                                          data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                                          title="*필요 시 업무 요청자/RPA담당자 업무 미팅 진행">업무 분석 및 미팅</span>
+
+                                                </div>
+                                                <div class="step-item">
+                                                    <span>RPA 개발 시작</span>
+                                                </div>
+                                                <div class="step-item">
+                                                    <span>자동화 완료!</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="process-line" style="width: 25%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div> <!-- end card-body -->
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                </div>
+                <!-- end row-->
+            </div> <!-- container -->
+
+        </div> <!-- content -->
+
+{% include 'page/footer_bottom.html' %}
+
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<!-- Vendor js -->
+<script src="{% static 'assets/js/vendor.min.js' %}"></script>
+<!-- Bootstrap Datepicker Plugin js -->
+<script src="{% static 'assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js' %}"></script>
+<!-- Select2 js  -->
+<script src="{% static 'assets/vendor/select2/js/select2.min.js' %}"></script>
+<!-- Dropzone File Upload js -->
+<script src="{% static 'assets/vendor/dropzone/min/dropzone.min.js' %}"></script>
+<!-- init js -->
+<script src="{% static 'assets/js/ui/component.fileupload.js' %}"></script>
+<!-- Dropzone.js init -->
+<!-- App js -->
+<script src="{% static 'assets/js/app.min.js' %}"></script>
+<!-- Toastr Demo js -->
+<script src="{% static 'assets/vendor/jquery-toast-plugin/jquery.toast.min.js' %}"></script>
+<script src="{% static 'assets/js/pages/demo.toastr.js' %}"></script>
+<script>
+function downloadFile() {
+    var fileUrl = '{{ base_dir|safe }}/static/[부서명_과제명] RPA 업무프로세스 정의서.pptx';
+
+    fetch(fileUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            var blobUrl = window.URL.createObjectURL(blob);
+
+            var link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = 'RPA 업무프로세스 정의서.pptx';
+
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        })
+        .catch(error => {
+            console.error('Error downloading file:', error);
+        });
+}
+
+</script>
+<!--  경고창  -->
+<script>
+    function warningnotification_notallowed(strText) {
+        $.NotificationApp.send("오류", strText,"top-right","Background color","error")
+    }
+</script>
+<!-- createnewproject 과제 신청하기 -->
+<script>
+function createnewproject() {
+
+ document.getElementById("showElementButton").disabled = true;
+<!--담당자 들 가져오기-->
+    var container = document.getElementById("select2-mySelect-container");
+    var buttons = container.querySelectorAll("button");
+
+    var extractedValues = [];
+    buttons.forEach(function(button) {
+      var ariaDescribedByValue = button.getAttribute("aria-describedby");
+
+      var valueToExtract = "SYC";
+      var indexOfSYC = ariaDescribedByValue.indexOf(valueToExtract);
+
+      if (indexOfSYC !== -1) {
+        var extractedValue = ariaDescribedByValue.substring(indexOfSYC + valueToExtract.length);
+        extractedValues.push("SYC" + extractedValue);
+      }
+    });
+
+    const elements = document.querySelectorAll('.select2-selection__choice__display');
+    var extractedValues_name = [];
+    elements.forEach(element => {
+        const value = element.textContent;
+        const parts = value.split("|");
+        const firstItem = parts[0].trim();
+        if (element.id.includes("SYC")) {
+            extractedValues_name.push(firstItem);
+        }
+    });
+
+<!--담당자 들 가져오기 End-->
+
+<!--과제명-->
+    taskname = document.getElementById("taskname").value;
+<!--업무설명-->
+    taskexplanation = document.querySelector("#taskexplanation").value
+<!--총 작업 인원-->
+    manager_amount = document.querySelector("#simpleinput1").value
+<!--인당 작업 시간-->
+    pertime_min = document.querySelector("#simpleinput2").value
+
+    var checkbox1 = document.querySelector("#firstRadio")
+    var checkbox2 = document.querySelector("#secondRadio")
+    var checkbox3 = document.querySelector("#thirdRadio")
+
+    var rpa_method;
+
+        if (checkbox1.checked) {
+            rpa_method = "Schedule";
+        } else if (checkbox2.checked) {
+            rpa_method = "Trigger";
+        } else if (checkbox3.checked) {
+            rpa_method = "Both";
+        }
+
+    var bizgrp = document.querySelector("#bizgrp").value;
+
+
+<!-- 업무군 가져오기 -->
+    var container = document.getElementById("select2-mySelect_type2-container");
+    var lis = container.querySelectorAll("li");
+
+    var taskgrp1 = [];
+    lis.forEach(function(li) {
+      var titlevalue = li.getAttribute("title");
+      var indexOfSYC = titlevalue.value;
+      if (indexOfSYC !== -1) {
+        var extractedValue = titlevalue;
+        taskgrp1.push(extractedValue);
+      }
+    });
+<!-- 업무군 가져오기 End -->
+
+
+<!-- 업무유형 가져오기 -->
+var container = document.getElementById("select2-mySelect_type3-container");
+var lis = container.querySelectorAll("li");
+
+var taskgrp2 = [];
+lis.forEach(function(li) {
+  var titlevalue = li.getAttribute("title");
+  var indexOfSYC = titlevalue.value;
+  if (indexOfSYC !== -1) {
+    var extractedValue = titlevalue;
+    taskgrp2.push(extractedValue);
+  }
+});
+<!-- 업무군 가져오기 End -->
+
+<!-- 키값 가져오기 -->
+    var elementWithTitle = document.querySelector('[title="pk_data"]');
+    var idValue = elementWithTitle.id;
+<!--키값 가져오기 End -->
+
+<!--    모든 값 가져오기 End-->
+
+    let tableData = [];
+    let rowData = {};
+
+
+
+    if (Object.keys(extractedValues).length == 0) {
+        warningnotification_notallowed("담당자가 누락되었습니다.");
+         document.getElementById("showElementButton").disabled = false;
+        return;
+    }
+
+    if (taskname == "") {
+        warningnotification_notallowed("과제명이 누락되었습니다.");
+        document.getElementById("showElementButton").disabled = false;
+        return;
+    }
+
+    if (taskexplanation == "") {
+        warningnotification_notallowed("업무 설명이 누락되었습니다.");
+        document.getElementById("showElementButton").disabled = false;
+        return;
+    }
+
+    if (manager_amount == "") {
+        warningnotification_notallowed("총 작업 인원이 누락되었습니다.");
+        document.getElementById("showElementButton").disabled = false;
+        return;
+    }
+
+    if (pertime_min == "") {
+        warningnotification_notallowed("작업 시간이 누락되었습니다.");
+        document.getElementById("showElementButton").disabled = false;
+        return;
+    }
+
+    if (bizgrp == "선택") {
+        warningnotification_notallowed("사업부가 누락되었습니다.");
+        document.getElementById("showElementButton").disabled = false;
+        return;
+    }
+
+    if (Object.keys(taskgrp1).length == 0) {
+        warningnotification_notallowed("업무군이 누락되었습니다.");
+        document.getElementById("showElementButton").disabled = false;
+        return;
+    }
+
+    if (Object.keys(taskgrp2).length == 0) {
+        warningnotification_notallowed("업무 유형이 누락되었습니다.");
+        document.getElementById("showElementButton").disabled = false;
+        return;
+    }
+
+
+    rowData.taskmanager = JSON.stringify(extractedValues);
+    rowData.taskmanager_name = JSON.stringify(extractedValues_name);
+    rowData.taskgrp1 = taskgrp1.join("/");
+    rowData.taskgrp2 = taskgrp2.join("/");
+    rowData.taskexplanation = taskexplanation;
+    rowData.taskname = taskname;
+    rowData.manager_amount = manager_amount;
+    rowData.pertime_min = pertime_min;
+    rowData.rpa_method = rpa_method;
+    rowData.bizgrp = bizgrp;
+    rowData.idValue = idValue;
+
+    tableData.push(rowData);
+  fetch('/createNewProject/', {
+    method: 'POST',
+    body: JSON.stringify(tableData),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    },
+  })
+    .then(() => {
+      setTimeout(() => {
+      var successAlertModal = new bootstrap.Modal(document.getElementById("success-alert-modal"));
+        successAlertModal.show();
+      }, 1500);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+
+function gotomytask() {
+ window.removeEventListener('beforeunload', handleBeforeUnload);
+    window.location.assign("/taskList/");
+}
+window.addEventListener('beforeunload', handleBeforeUnload);
+
+</script>
+<!-- 이미지 미리보기 설정 -->
+<script>
+document.getElementById('update-alert-container').addEventListener('mousemove', function() {
+    var divElements = document.querySelectorAll('.card.mt-1.mb-0.shadow-none.border.dz-processing.dz-success.dz-complete');
+
+    divElements.forEach(function(divElement) {
+        var imgElement = divElement.querySelector('img[data-dz-thumbnail]');
+        var a1 = divElement.querySelector('div:nth-child(2) a');
+        var content1 = a1.textContent;
+        var parts = content1.split('.');
+        var lastPart = parts[parts.length - 1];
+        if (imgElement.getAttribute('src') === '#') {
+            if (lastPart.includes('xls')) {
+                var newSrc = '{% static 'assets/images/excel.PNG' %}';
+            } else if (lastPart.includes('ppt')) {
+                var newSrc = '{% static 'assets/images/ppt.png' %}';
+            } else if (lastPart.includes('doc')) {
+                var newSrc = '{% static 'assets/images/word.png' %}';
+            } else if (lastPart.includes('txt')) {
+                var newSrc = '{% static 'assets/images/txt.png' %}';
+            } else if (lastPart.includes('pdf')) {
+                var newSrc = '{% static 'assets/images/pdf.png' %}';
+            }
+            imgElement.setAttribute('src', newSrc);
+        }
+    });
+ });
+</script>
+<script>
+function myFunction(event) {
+    var clickedElement = event.target;
+    var cardElement = clickedElement.closest('.card');
+    var linkElement = cardElement.querySelector('a.text-muted.fw-bold[data-dz-name]');
+    var linkText = linkElement.textContent || linkElement.innerText;
+    removeRequest(linkText);
+}
+
+function removeRequest(strtext){
+    var filename = strtext;
+    let tableData = [];
+    let rowData = {};
+    rowData.field1 = filename;
+    tableData.push(rowData);
+
+  fetch('/deletefile/', {
+    method: 'POST',
+    body: JSON.stringify(tableData),
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+    },
+  })
+    .then(() => {
+      setTimeout(() => {
+      }, 1500);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+}
+</script>
+<!--       유저가 파일 업로드 후 페이지 이동 한 경우-->
+<script>
+function handleBeforeUnload(event) {
+    if (event.target.activeElement && event.target.activeElement.id === 'showElementButton') {
+        return;
+    }
+  event.preventDefault();
+
+    let tableData = [];
+    let rowData = {};
+
+    rowData.sendmsg = 'leaved';
+    rowData.file_pk = '{{ pk_data }}';
+    tableData.push(rowData);
+
+    fetch('/deletefileleaved/', {
+        method: 'POST',
+        body: JSON.stringify(tableData),
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,
+        },
+    })
+    .then(() => {
+
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+
+window.addEventListener('beforeunload', handleBeforeUnload);
+var displayConfirmationMessage = true;
+</script>
+<script>
+var inputElement1 = document.getElementById("simpleinput1");
+var inputElement2 = document.getElementById("simpleinput2");
+
+inputElement1.addEventListener("input", function() {
+    var inputValue = parseInt(inputElement1.value);
+    if (inputValue < 1 || isNaN(inputValue)) {
+        inputElement1.value = 1;
+    }
+});
+inputElement2.addEventListener("input", function() {
+    var inputValue = parseInt(inputElement2.value);
+    if (inputValue < 1 || isNaN(inputValue)) {
+        inputElement2.value = 1;
+    }
+});
+
+</script>
+</body>
+</html>

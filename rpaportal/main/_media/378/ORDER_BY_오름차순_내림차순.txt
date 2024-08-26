@@ -1,0 +1,8 @@
+
+SELECT TOP (1000) [id]
+      ,[activity_status]
+      ,[start_datetime]
+  FROM [SYG-RPA-DB].[dbo].[JOBEXECUTIONS]
+  ORDER BY  start_datetime DESC
+  
+  >> 내림차순은 DESC 추가해주면 됨

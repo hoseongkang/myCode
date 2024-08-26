@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>RPA PORTAL</title>
+    <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description"/>
+    <meta content="Coderthemes" name="author"/>
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+    <!-- Icons css -->
+    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'assets/vendor/jstree/themes/default/style.min.css' %}" rel="stylesheet" type="text/css">
+    <!-- Theme Config Js -->
+    <script src="{% static 'assets/js/hyper-config.js' %}"></script>
+    <!-- App css -->
+    <link href="{% static 'assets/css/app-saas.min.css' %}" rel="stylesheet" type="text/css" id="app-style"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+.count {
+  width: 370px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  font-weight: bold;
+  border-radius: 1rem;
+
+}
+
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+  word-break: break-all;
+  font-family: Pretendard;
+}
+
+    </style>
+</head>
+
+<body>
+<!-- Pre-loader -->
+<!--<div id="preloader">-->
+<!--    <div id="status">-->
+<!--        <div class="bouncing-loader">-->
+<!--            <div></div>-->
+<!--            <div></div>-->
+<!--            <div></div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+{% csrf_token %}
+<!-- Begin page -->
+<div class="wrapper">
+    {% include 'page/navbar_top.html' %}
+    {% include 'page/navbar_left.html' %}
+
+    <div class="content-page">
+        <div class="content">
+    {% csrf_token %}
+            <!-- Start Content-->
+            <div class="container-fluid">
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item">Test 페이지</li>
+                                    <li class="breadcrumb-item">Test</li>
+                                </ol>
+                            </div>
+                            <h4 class="page-title">Test</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+
+
+
+
+
+
+
+
+
+
+<div class="count" id="cntEXE"></div>
+
+
+
+
+
+
+
+
+
+
+
+                </div>
+
+<h2 id></h2>
+            </div> <!-- container -->
+        </div> <!-- content -->
+
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-md-end footer-links d-none d-md-block">
+                            <a href="javascript: void(0);"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+<script>
+
+<!--var vid = document.getElementById("video"-->
+<!--vid.addEventListener('loadedmetadata', getDuration, false);-->
+
+<!--function getDuration() {-->
+<!--    console.log(vid.duration)-->
+<!--}-->
+
+</script>
+<!-- Vendor js -->
+<script src="https://vjs.zencdn.net/7.3.0/video.js"></script>
+<script src="{% static 'assets/js/vendor.min.js' %}"></script>
+
+<script src="{% static 'assets/vendor/jstree/jstree.min.js' %}"></script>
+<script src="{% static 'assets/js/pages/demo.jstree.js' %}"></script>
+        <!-- Apex Chart js -->
+        <script src="{% static 'assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
+
+        <!-- Apex Chart Column Demo js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.0/dayjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.0/plugin/quarterOfYear.min.js"></script>
+        <script src="{% static 'assets/js/pages/demo.apex-column.js' %}"></script>
+<!-- App js -->
+<script src="{% static 'assets/js/app.min.js' %}"></script>
+
+
+
+
+
+
+<script>
+
+
+
+
+function getTotalexe() {
+    var orginNum = document.getElementById("cntEXE").innerText
+    var dataToSend = {
+        getTotal: 3
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/getrpaexecution/',
+        data: dataToSend,
+        headers: {
+            'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+        },
+        success: function (response) {
+            var results = response.taskTotalcnt;
+            const $counter = document.querySelector(".count");
+            const max = results;
+
+            // Define the counter function
+            const counter = (max) => {
+                let now = orginNum;
+
+                const handle = setInterval(() => {
+                    now = Math.round(now);
+
+                    if (now <= max) {
+                        $counter.innerHTML = now;
+                    }
+
+                    const step = 1;
+
+                    now += step;
+
+                    if (now >= max) {
+                        $counter.innerHTML = max;
+                        clearInterval(handle);
+                    }
+                }, 10);
+            };
+
+            // Call the counter function
+            counter(max);
+        },
+        error: function (error) {
+            console.log('오류 발생: ', error);
+        }
+    });
+}
+
+getTotalexe();
+
+setInterval(getTotalexe, 10000);
+
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8"/>
+    <title> RPA PORTAL </title>
+    <link rel="stylesheet" href="{% static 'assets/vendor/jquery-toast-plugin/jquery.toast.min.css' %}">
+    {% include 'page/head_basic_scripts.html' %}
+    <style>
+    .modal-header {
+      cursor: grab;
+    }
+    </style>
+</head>
+
+<body>
+<!-- Begin page -->
+<div class="wrapper">
+    {% include 'page/navbar_top.html' %}
+    {% include 'page/navbar_left.html' %}
+    <div class="content-page">
+        <div class="content">
+        {% csrf_token %}
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+<!--                            <div class="page-title-right">-->
+<!--                                오른쪽 내용-->
+<!--                            </div>-->
+                            <h4 class="page-title">계정 관리</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+            </div> <!-- container -->
+
+        </div> <!-- content -->
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body" style="min-height: 700px;">
+                        <button type="button" class="btn btn-light d-flex" data-bs-toggle="modal"
+                                    data-bs-target="#new-ad-modal">
+                            <i class="ri-user-add-line" style="font-size: 17px"></i>
+                        </button>
+                            <div id="new-ad-modal" class="modal fade" tabindex="-1" role="dialog"
+                                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-primary">
+                                            <h4 class="modal-title" id="new-ad-modalLabel" style="color: white;">관리자 추가</h4>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-hidden="true"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="new-ad-name" class="col-form-label">이름:</label>
+                                                <input type="text" class="form-control" id="new-ad-name">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="new-ad-empno" class="col-form-label">사번:</label>
+                                                <input type="text" class="form-control" id="new-ad-empno">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="new-ad-role" class="col-form-label">역할:</label>
+                                                <input type="text" class="form-control" id="new-ad-role">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" onclick="adduser();">추가</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        <table class="table table-hover table-centered mb-0 text-center">
+                            <thead>
+                            <tr>
+                                <th>이름</th>
+                                <th>사번</th>
+                                <th>역할</th>
+                                <th>생성일</th>
+                                <th>작업</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in admin_user %}
+                            <tr>
+
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.empno }}</td>
+                                <td>
+                                    <span class="badge bg-primary">{{ user.role }}</span>
+                                </td>
+                                <td>{{ user.created_date|date:'Y-m-d' }}</td>
+                                <td style="font-size: 20px">
+                                    <i class="ri-edit-line" type="button" data-bs-toggle="modal" data-bs-target="#user-edit-modal{{ user.pk }}"></i>
+                                    <i class="ri-delete-bin-6-line" type="button" data-bs-toggle="modal" data-bs-target="#del-modal{{ user.pk }}"></i>
+                                </td>
+                            </tr>
+
+
+                            <div id="user-edit-modal{{ user.pk }}" class="modal fade" tabindex="-1" role="dialog"
+                                 aria-labelledby="standard-modalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title" id="user-edit-modalLabel">계정 수정</h4>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-hidden="true"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="edit-ad-name{{ user.pk }}" class="col-form-label">이름:</label>
+                                                <input type="text" class="form-control" id="edit-ad-name{{ user.pk }}" value="{{ user.name }}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="edit-ad-empno{{ user.pk }}" class="col-form-label">사번:</label>
+                                                <input type="text" class="form-control" id="edit-ad-empno{{ user.pk }}" value="{{ user.empno }}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="edit-ad-role{{ user.pk }}" class="col-form-label">역할:</label>
+                                                <input type="text" class="form-control" id="edit-ad-role{{ user.pk }}" value="{{ user.role }}">
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" onclick="edituser('{{ user.pk }}');">저장</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div id="del-modal{{ user.pk }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="warning-header-modalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-warning">
+                                            <h4 class="modal-title" id="warning-header-modalLabel">관리자 삭제</h4>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-hidden="true"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p><mark>{{ user.name }} [{{ user.empno }}]</mark></p>
+                                            관리자를 삭제하시겠습니까?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-warning" onclick="deluser('{{ user.pk }}');">삭제</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                                    {% include 'page/footer_bottom.html' %}
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+<!-- END wrapper -->
+
+<!-- Vendor js -->
+<script src="{% static 'assets/js/vendor.min.js' %}"></script>
+
+<!-- App js -->
+<script src="{% static 'assets/js/app.min.js' %}"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<!-- jQuery UI -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- Toastr Demo js -->
+<script src="{% static 'assets/vendor/jquery-toast-plugin/jquery.toast.min.js' %}"></script>
+<script src="{% static 'assets/js/pages/demo.toastr.js' %}"></script>
+<script>
+function adduser() {
+        var ad_name = document.querySelector("#new-ad-name").value
+        var ad_empno = document.querySelector("#new-ad-empno").value;
+        var ad_role = document.querySelector("#new-ad-role").value;
+
+        if (ad_name === '' || ad_empno === '' || ad_role === '') {
+            warningnotification_comment();
+            return;
+        }
+
+        var dataToSend = {
+            ad_name: ad_name,
+            ad_empno: ad_empno,
+            ad_role: ad_role
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/addaduser/',
+            data: dataToSend,
+            headers: {
+            'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+            success: function (response) {
+                $('#new-ad-modal').modal('toggle');
+                location.reload();
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+}
+
+
+function edituser(pk) {
+        var ad_name = document.querySelector("#edit-ad-name" + pk).value;
+        var ad_empno = document.querySelector("#edit-ad-empno" + pk).value;
+        var ad_role = document.querySelector("#edit-ad-role" + pk).value;
+
+        if (ad_name === '' || ad_empno === '' || ad_role === '') {
+            warningnotification_comment();
+            return;
+        }
+
+        var dataToSend = {
+            ad_name: ad_name,
+            ad_empno: ad_empno,
+            ad_role: ad_role,
+            ad_pk: pk
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/editaduser/',
+            data: dataToSend,
+            headers: {
+            'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+            success: function (response) {
+                $('#edit-ad-modal' + pk).modal('toggle');
+                location.reload();
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+}
+
+
+function deluser(pk) {
+        var dataToSend = {
+            ad_pk: pk
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '/deladuser/',
+            data: dataToSend,
+            headers: {
+            'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+            },
+            success: function (response) {
+                $('#del-modal' + pk).modal('toggle');
+                location.reload();
+            },
+            error: function (error) {
+                console.log('오류 발생: ', error);
+            }
+        });
+}
+
+
+function warningnotification_comment() {
+    $.NotificationApp.send("오류","입력된 값이 없습니다","top-right","Background color","error")
+}
+
+</script>
+<script>
+  $(function () {
+    $('.modal-dialog').draggable({
+      handle: ".modal-header"
+    });
+  });
+</script>
+</body>
+</html>

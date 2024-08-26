@@ -1,0 +1,185 @@
+{% load static %}
+<div class="navbar-custom">
+    <div class="topbar container-fluid">
+        <div class="d-flex align-items-center gap-lg-2 gap-1">
+
+            <!-- Topbar Brand Logo -->
+            <div class="logo-topbar">
+                <!-- Logo light -->
+                <a href="/" class="logo-light">
+                                <span class="logo-lg">
+                                    <img src="{% static 'assets/images/SY_white.png' %}" alt="logo" style="height:40px;">
+                                </span>
+                    <span class="logo-sm">
+                                    <img src="{% static 'assets/images/favicon.png' %}" alt="logo">
+                                </span>
+                </a>
+
+                <!-- Logo Dark -->
+                <a href="/" class="logo-dark">
+                                <span class="logo-lg">
+                                    <img src="{% static 'assets/images/SY.png' %}" alt="dark logo" style="height:40px;">
+                                </span>
+                    <span class="logo-sm">
+                                    <img src="{% static 'assets/images/favicon.png' %}" alt="dark logo">
+                                </span>
+                </a>
+
+
+            </div>
+            <h5>{{ NAME_KO }} 님 반갑습니다!</h5>
+
+            <!-- Horizontal Menu Toggle Button -->
+            <button class="navbar-toggle" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+                <div class="lines">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </button>
+        </div>
+
+        <ul class="topbar-menu d-flex align-items-center gap-3">
+            <li class="d-none d-sm-inline-block">
+                <div class="nav-link" id="light-dark-mode" data-bs-toggle="tooltip" data-bs-placement="left"
+                     title="Mode">
+                    <i class="ri-moon-line font-22"></i>
+                </div>
+            </li>
+            <li class="d-none d-sm-inline-block">
+                <div class="nav-link" id="account" data-bs-placement="left"
+                     title="Account">
+                    <div class="dropdown btn-group">
+                        <i class="ri-account-circle-line font-22" type="button" data-bs-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                        </i>
+                        <div class="dropdown-menu dropdown-menu-animated">
+<!--                            <a class="dropdown-item" id="getAccount" data-bs-toggle="modal" data-bs-target="#account-modal" >Account</a>-->
+                            {% csrf_token %}
+                            <a class="dropdown-item" type="button" id="logoutBtn2" href="/logout/">Logout</a>
+
+                        </div>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </div>
+</div>
+
+<!--<div id="account-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="standard-modalLabel" aria-hidden="true">-->
+<!--    <div class="modal-dialog">-->
+<!--        <div class="modal-content">-->
+<!--            <div class="modal-header">-->
+<!--                <h4 class="modal-title" id="standard-modalLabel">계정 정보</h4>-->
+<!--                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>-->
+<!--            </div>-->
+<!--            <div class="modal-body">-->
+
+
+<!--                <dl class="row mb-0">-->
+<!--                    <dt class="col-sm-3">이름</dt>-->
+<!--                    <dd class="col-sm-9">강호성</dd>-->
+
+<!--                    <dt class="col-sm-3">Euismod</dt>-->
+<!--                    <dd class="col-sm-9">-->
+<!--                        <p>Vestibulum id ligula porta felis euismod semper eget lacinia odio sem nec elit.</p>-->
+<!--                        <p>Donec id elit non mi porta gravida at eget metus.</p>-->
+<!--                    </dd>-->
+
+<!--                    <dt class="col-sm-3">Malesuada porta</dt>-->
+<!--                    <dd class="col-sm-9">Etiam porta sem malesuada magna mollis euismod.</dd>-->
+
+<!--                    <dt class="col-sm-3 text-truncate">Truncated term is truncated</dt>-->
+<!--                    <dd class="col-sm-9">Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut-->
+<!--                        fermentum massa justo sit amet risus.-->
+<!--                    </dd>-->
+<!--                </dl>-->
+
+
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>-->
+<!--                <button type="button" class="btn btn-primary">Save changes</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--                                $(document).ready(function() {-->
+<!--                                  $("#logoutBtn").click(function(event) {-->
+<!--                                    event.preventDefault();-->
+<!--                                    var updatePromise = fetch('/logout/', {-->
+<!--                                      method: 'POST',-->
+<!--                                      headers: {-->
+<!--                                        'Content-Type': 'application/json',-->
+<!--                                        'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value,-->
+<!--                                      },-->
+<!--                                    });-->
+<!--                                    updatePromise.then(function(response) {-->
+<!--                                    if (response.ok) {-->
+<!--                                        location.reload();-->
+<!--                                      }-->
+<!--                                    }).catch(function(error) {-->
+<!--                                    });-->
+<!--                                  });-->
+<!--                                });-->
+<!--                            </script>-->
+
+<script>
+
+var empno = "{{ request.session.user_empno }}";
+
+$(document).ready(function () {
+
+            $.ajax({
+                type: 'POST',
+                url: '/getempinfo/',
+                data: dataToSend,
+                headers: {
+                'X-CSRFToken': document.getElementsByName('csrfmiddlewaretoken')[0].value
+                },
+                success: function (response) {
+                var results = JSON.parse(response.jobdone_json);
+
+                var modalBody = document.getElementById("modal-body" + pId);
+                    while (modalBody.firstChild) {
+                        modalBody.removeChild(modalBody.firstChild);
+                    }
+
+                for (var i = 0; i < results.length; i++) {
+                    var result = results[i];
+
+                   var startDatetime = `${result.start_datetime}`.slice(0, 19);
+                    var newHtml =  `<ul>
+                        <li><mark>${startDatetime}</mark>
+                            <ul>
+                                <li>${result.activity_type}</li>
+                            </ul>
+                        </li></ul>`;
+
+                      var handleDragulaLeft = document.getElementById("modal-body" + pId);
+
+                      var tempDiv = document.createElement("ul");
+                      tempDiv.innerHTML = newHtml;
+
+                      while (tempDiv.firstChild) {
+                        handleDragulaLeft.appendChild(tempDiv.firstChild);
+                      }
+                }
+                var modalBody_avetime = document.getElementById("avetime" + pId);
+                modalBody_avetime.innerText = response.aveTime;
+                console.log(response.aveTime);
+
+                },
+                error: function (error) {
+                    console.log('오류 발생: ', error);
+                }
+            });
+        });
+    });
+
+
+
+</script>
