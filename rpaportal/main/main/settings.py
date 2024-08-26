@@ -80,7 +80,7 @@ DATABASES = {
         'ENGINE': 'mssql',
         'NAME': 'rpaportal',
         'USER': 'sa',
-        'PASSWORD': '@sygrpa22!',
+        'PASSWORD': '*****',
         'HOST': '130.1.22.33',
         'PORT': '2433',
         'OPTIONS': {
@@ -95,7 +95,7 @@ DATABASES = {
 #         'PORT': '2433',
 #         'NAME': 'rpaportal',
 #         'USER': 'sa',
-#         'PASSWORD': 'sygrpa22!',
+#         'PASSWORD': '*****',
 #         'OPTIONS': {
 #             'driver': 'ODBC Driver 17 for SQL Server',
 #         },
