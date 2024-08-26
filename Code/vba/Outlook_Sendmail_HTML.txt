@@ -1,0 +1,88 @@
+
+Sub SendMail()
+
+Dim MyEmail As MailItem
+Dim rng As Range
+Set OutApp = CreateObject("Outlook.Application")
+Set OutMail = OutApp.CreateItem(0)
+Dim iRow_End As Integer
+Dim arrList_To As Variant: arrList_To = Array()
+Dim arrList_CC As Variant: arrList_CC = Array()
+Dim iRowEnd As Integer
+Dim arrList As Variant: arrList = Array()
+Dim MailRange As String
+
+Sheets("Summary").Select
+
+MailRange = Range("M2").Value
+Set rng = Range(MailRange).SpecialCells(xlCellTypeVisible)
+
+Sheets("MailList").Select
+'Mail list, To
+    iRow_End = Sheets("MailList").Cells(Rows.Count, 1).End(xlUp).Row
+
+    For i = 2 To iRow_End
+        ReDim Preserve arrList_To(UBound(arrList_To) + 1)
+        arrList_To(UBound(arrList_To)) = Range("A" & i).Value
+    Next i
+
+'Mail list, CC
+    iRow_End = Sheets("MailList").Cells(Rows.Count, 2).End(xlUp).Row
+
+    For i = 2 To iRow_End
+        ReDim Preserve arrList_CC(UBound(arrList_CC) + 1)
+        arrList_CC(UBound(arrList_CC)) = Range("B" & i).Value
+    Next i
+Sheets("Summary").Select
+    With OutMail
+        .To = Join(arrList_To, ";")
+        .CC = Join(arrList_CC, ";")
+        .Subject = Range("B2").Value
+        .BodyFormat = olFormatHTML
+        .HTMLBody = "<body style=font-size:10pt;><font face=""Yu Gothic"";>안녕하십니까 <br>Market brief 송부 드립니다.<br>" & RangetoHTML(rng) & "<br><br><img src=""" & "\\130.1.22.33\a360data\EmailImage\RPA-서명.jpg""/>"
+        .Display
+    End With
+
+
+End Sub
+Function RangetoHTML(rng As Range)
+    Dim obj As Object
+    Dim txtstr As Object
+    Dim File As String
+    Dim WB As Workbook
+    File = Environ$("temp") & "\" & Format(Now, "dd-mm-yy h-mm-ss") & ".htm"
+    rng.Copy
+    Set WB = Workbooks.Add(1)
+    With WB.Sheets(1)
+        .Cells(1).PasteSpecial Paste:=8
+        .Cells(1).PasteSpecial xlPasteValues, , False, False
+        .Cells(1).PasteSpecial xlPasteFormats, , False, False
+        .Cells(1).Select
+        Application.CutCopyMode = False
+        On Error Resume Next
+        .DrawingObjects.Visible = True
+        .DrawingObjects.Delete
+        On Error GoTo 0
+    End With
+    With WB.PublishObjects.Add( _
+         SourceType:=xlSourceRange, _
+         Filename:=File, _
+         Sheet:=WB.Sheets(1).Name, _
+         Source:=WB.Sheets(1).UsedRange.Address, _
+         HtmlType:=xlHtmlStatic)
+        .Publish (True)
+    End With
+    Set obj = CreateObject("Scripting.FileSystemObject")
+    Set txtstr = obj.GetFile(File).OpenAsTextStream(1, -2)
+    RangetoHTML = txtstr.readall
+    txtstr.Close
+    RangetoHTML = Replace(RangetoHTML, "align=center x:publishsource=", _
+                          "align=left x:publishsource=")
+    WB.Close savechanges:=False
+    Kill File
+    Set txtstr = Nothing
+    Set obj = Nothing
+    Set WB = Nothing
+End Function
+
+

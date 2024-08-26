@@ -1,0 +1,13 @@
+Sub RegExp()
+    
+    Set regex = CreateObject("VBScript.RegExp")
+    Dim sText As String
+    regex.Pattern = "\s+\S+([ㄱ-힣]+|[a-zA-Z])파트"
+    regex.Global = True
+
+    asasd = "전주공장 공무팀 보전파트"
+    Dim matches As Variant
+    sText = regex.Replace(asasd, "")
+    Debug.Print sText
+
+End Sub

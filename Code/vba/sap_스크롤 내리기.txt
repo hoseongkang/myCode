@@ -1,0 +1,33 @@
+Sub sap_scrollDown()
+
+    Dim SapGuiAuto
+    Dim SetApp
+    Dim Connection
+    Dim Session
+    
+    Dim sChangeOptions As String
+    Dim iRowEnd As Integer
+    Dim allRows As Integer
+    Dim iCnt As Integer: iCnt = 0
+
+    
+    Set SapGuiAuto = GetObject("SAPGUI")
+    Set SetApp = SapGuiAuto.GetScriptingEngine
+    Set Connection = SetApp.Children(0)
+    Set Session = Connection.Children(0)
+
+    statusPanel = Session.findById("wnd[0]/sbar/pane[0]").Text
+    statusPanel = Replace(statusPanel, " 건을 조회하였습니다!!!", "")
+    
+    For i = 2 To CInt(statusPanel) - 1
+        Session.findById("wnd[0]/usr/cntlGRID1/shellcont/shell/shellcont[1]/shell").firstVisibleRow = i
+    Next i
+
+
+    Set SapGuiAuto = Nothing
+    Set SetApp = Nothing
+    Set Connection = Nothing
+    Set Session = Nothing
+    
+    
+End Sub

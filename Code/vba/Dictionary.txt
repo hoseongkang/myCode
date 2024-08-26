@@ -1,0 +1,13 @@
+Sub Dictionary()
+
+Dim oTeams As Object
+Set oTeams = CreateObject("Scripting.Dictionary")
+
+    For i = 2 To iRowEnd
+    If oTeams.Exists(Range("J" & i).Value) Then
+    Else
+        oTeams.Add Range("J" & i).Value, 1
+    End If
+    Next i
+
+End Sub

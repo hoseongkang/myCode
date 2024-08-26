@@ -1,0 +1,17 @@
+SELECT [id]
+      ,[activity_status]
+      ,DATEADD(hh, 9 ,[start_datetime]) as 'start_datetime'
+      ,DATEADD(hh, 9 ,[end_datetime]) as 'end_datetime'
+      ,[error_message]
+      ,[bot_id]
+      ,[device_id]
+      ,[user_id]
+      ,[current_line]
+      ,[total_lines]
+  FROM [SYG-RPA-DB].[dbo].[JOBEXECUTIONS] 
+  WHERE  DATEDIFF(MONTH, DATEADD(hh, 9 ,[start_datetime]), GETDATE()) < 1
+  ORDER BY start_datetime DESC;
+
+
+=======================================
+예시는 같은 달에 포함된 범위

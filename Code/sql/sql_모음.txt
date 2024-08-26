@@ -1,0 +1,139 @@
+USE [DTLab_Web]
+GO
+/****** Object:  Table [dbo].[syweb_question_dt]    Script Date: 2023-05-09 오전 10:22:23 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[syweb_question_dt](
+	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[QUESTION] [nvarchar](100) NOT NULL,
+	[USE_YN] [nvarchar](10) NOT NULL,
+	[ORDER] [nvarchar](10) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[syweb_system_dt]    Script Date: 2023-05-09 오전 10:22:23 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[syweb_system_dt](
+	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[COMPANY] [nvarchar](50) NOT NULL,
+	[COMPANY_URL] [nvarchar](50) NOT NULL,
+	[MANAGER] [nvarchar](50) NOT NULL,
+	[MANAGER_TEAM] [nvarchar](50) NOT NULL,
+	[MANAGER_MAIL] [nvarchar](50) NOT NULL,
+	[MANAGER_PHONE] [nvarchar](50) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[syweb_question_dt] ON 
+GO
+INSERT [dbo].[syweb_question_dt] ([id], [QUESTION], [USE_YN], [ORDER]) VALUES (1, N'회사 및 사업무 소개, 연혁 등의 정보가 최신화 되어 있는지 확인하셨나요?', N'Y', N'1')
+GO
+INSERT [dbo].[syweb_question_dt] ([id], [QUESTION], [USE_YN], [ORDER]) VALUES (2, N'제품정보, 카다로그 등의 정보가 최신화 되어 있는지 확인하셨나요?', N'Y', N'2')
+GO
+INSERT [dbo].[syweb_question_dt] ([id], [QUESTION], [USE_YN], [ORDER]) VALUES (3, N'회사 및 사업부의 최신 소식이 뉴스 게시판에 정상적으로 업데이트 되어 있나요?', N'Y', N'3')
+GO
+INSERT [dbo].[syweb_question_dt] ([id], [QUESTION], [USE_YN], [ORDER]) VALUES (4, N'홈페이지 고객 문의 중 미처리 내역은 없나요?', N'Y', N'4')
+GO
+SET IDENTITY_INSERT [dbo].[syweb_question_dt] OFF
+GO
+SET IDENTITY_INSERT [dbo].[syweb_system_dt] ON 
+GO
+INSERT [dbo].[syweb_system_dt] ([id], [COMPANY], [COMPANY_URL], [MANAGER], [MANAGER_TEAM], [MANAGER_MAIL], [MANAGER_PHONE]) VALUES (1, N'삼양홀딩스', N'http://portal.samyang.com/', N'손현철', N'디지털혁신팀', N'hoseng.kang@samyang.com', N'01032453805')
+GO
+INSERT [dbo].[syweb_system_dt] ([id], [COMPANY], [COMPANY_URL], [MANAGER], [MANAGER_TEAM], [MANAGER_MAIL], [MANAGER_PHONE]) VALUES (2, N'삼양데이타시스템', N'http://portal.samyang.com/', N'강호성', N'Digital Lab', N'hoseng.kang@samyang.com', N'01032453805')
+GO
+INSERT [dbo].[syweb_system_dt] ([id], [COMPANY], [COMPANY_URL], [MANAGER], [MANAGER_TEAM], [MANAGER_MAIL], [MANAGER_PHONE]) VALUES (3, N'삼양바비오팜', N'http://portal.samyang.com/', N'홍길동', N'기획팀', N'hoseng.kang@samyang.com', N'01032453805')
+GO
+SET IDENTITY_INSERT [dbo].[syweb_system_dt] OFF
+GO
+
+
+
+=====================================
+  UPDATE  [dbo].[syweb_system_dt]
+       SET USE_YN = 'Y' WHERE ID = '3'
+	   
+	   
+	   
+	   
+	   
+  DELETE FROM [DTLab_Web].[dbo].[syweb_answer_dat] WHERE id = 'a';
+
+
+/****** SSMS의 SelectTopNRows 명령 스크립트 ******/
+SELECT TOP (1000) [id]
+      ,[head_image]
+	  ,[checklist]
+  FROM [PLFSY].[dbo].[vehicle_log_test_image]
+
+
+
+ALTER TABLE [PLFSY].[dbo].[vehicle_log_test_image] ADD checklist VARCHAR(50)
+
+
+
+  SET IDENTITY_INSERT [PLFSY].[dbo].[vehicle_log_test_image] OFF
+GO
+  DELETE FROM [PLFSY].[dbo].[vehicle_log_test_image] WHERE id > '0';
+SET IDENTITY_INSERT [PLFSY].[dbo].[vehicle_log_test_image] ON 
+GO
+
+INSERT INTO [PLFSY].[dbo].[vehicle_log_checklist_dt] (DIVISION, INSPECTION_1, INSPECTION_2) 
+VALUES ('입고차량','외부','봉인상태'),
+('입고차량','적재 공간','자극적인 악취 상태'),
+('입고차량','적재 공간','누수 사태'),
+('입고차량','적재 공간','이물질에 의한 오염 상태'),
+('입고차량','적재 공간','해충침입 여부 등 위생 상태'),
+('입고차량','바닥면','청결 상태'),
+('입고차량','바닥면','부식 상태'),
+('입고차량','바닥면','파손 상태'),
+('입고차량','바닥면','이물질에 의한 오염 상태'),
+('입고차량','제품','제품 적재 상태'),
+('제품','외관','자극적인 악취 상태'),
+('제품','외관','상, 하부 청결 상태'),
+('제품','외관','파손 상태'),
+('제품','외관','이물질에 의한 오염 상태'),
+('제품','파렛트','파렛트 내외부 청결 상태'),
+('제품','표시사항','한도견본과 일치 여부')
+
+
+
+
+CAST(N'2020-11-23T16:49:56.0000000' AS DateTime2)
+
+=============================================차량일지 오름차순 잘못되어있는 경우 모니터링하는 쿼리
+WITH CTE AS (
+    SELECT *,
+           LAG(CAST(updated_date_cnt AS INT)) OVER (PARTITION BY updated_date ORDER BY CAST(updated_date_cnt AS INT)) AS prev_cnt
+    FROM [PLFSY].[dbo].[vehicle_log_test_image]
+    WHERE type = '제품'
+)
+SELECT *
+FROM CTE
+WHERE (prev_cnt IS NULL OR CAST(updated_date_cnt AS INT) - prev_cnt = 2)
+    AND ID NOT IN (
+        SELECT ID + 1
+        FROM [PLFSY].[dbo].[vehicle_log_test_image]
+        WHERE Type = '제품'
+    )
+    AND CAST(updated_date_cnt AS INT) <> 1
+ORDER BY CAST(updated_date AS DATE) DESC, CAST(updated_date_cnt AS INT) ASC;
+
+
+UPDATE [PLFSY].[dbo].[vehicle_log_test_image] SET updated_date_cnt = '2' WHERE ID >= '0' and ID <= '1';
+
+
+  SELECT * FROM [PLFSY].[dbo].[vehicle_log_test_image]
+WHERE ID >= 6914 AND ID <= 6930;
+

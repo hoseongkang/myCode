@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+	
+	body,table,th,td,p,a,div.ul,li,dl,dt,dd {font-family : "Malgun Gothic", dotum, arial, sans-serif !important; font-size:12px !important;}	
+	* {padding0;margin:0;color:#333;}
+	table {border-collapse: collapse;border-spacing: 0;border:1px solid #ccc;width:80%;}
+	table, td {border: solid 2px #bed4df;background:#eef6fa;text-align:center;padding:20px;}
+
+</style>
+</head>
+<body>
+	<table>
+		<tr>
+			<td><span style="font-weight:bold;">[설문제목]</span> [창립 98주년 기념] ECO-100 플로깅 우수 촬영조 투표</td>
+		</tr>
+		<tr>
+			<td style="text-align:left;">
+				강호성님 안녕하세요. <br><br>
+				  <br><br><br><br>
+				* 삼양모바일 이용하여 설문 참여 가능 합니다.
+			</td>
+		</tr>
+		<tr>
+			<td style="text-align:center;">
+				<table style="padding:10px 20px;width:10%;background-color:#219dcb;margin: 0 auto;">
+					<tr>
+						<td style="padding:10px 20px;width:10%;background-color:#219dcb;border: solid 2px #0f6c8f;">
+							<a href="http://portal.samyang.com/servicepack/survey/surveyIngList.do" target="_pop" style="display:block;width:100%;height:100%;color:#fff;text-decoration:none;border-radius:2px;">
+							<a href="http://portal.samyang.com/servicepack/survey/response/response.do?surveyId=120019215838&amp;hrsurvey=0&amp;hrSurveyType=0&amp;evluationTargetId=SYC720584" target="_pop" style="display:block;width:100%;height:100%;color:#fff;text-decoration:none;border-radius:2px;">
+								설문시작
+							</a>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+	
+	
+</body>
+</html>

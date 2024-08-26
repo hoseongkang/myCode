@@ -1,0 +1,21 @@
+Sub LoopAllFilesInFolder()
+
+Dim folderName As String
+Dim FSOLibrary As Object
+Dim FSOFolder As Object
+Dim FSOFile As Object
+
+folderName = "C:\RPADATA\RPA_Raw_MaterialPrice\Mail"
+
+Set FSOLibrary = CreateObject("Scripting.FileSystemObject")
+Set FSOFolder = FSOLibrary.GetFolder(folderName)
+
+For Each FSOFile In FSOFolder.Files
+    Debug.Print FSOFile.Name
+Next
+
+'Release the memory
+Set FSOLibrary = Nothing
+Set FSOFolder = Nothing
+
+End Sub

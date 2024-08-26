@@ -1,0 +1,51 @@
+Sub SAP_Run()
+    Dim SapGuiAuto
+    Dim SetApp
+    Dim Connection
+    Dim Session
+    
+    Dim sChangeOptions As String
+    Dim iRowEnd As Integer
+    Dim allRows As Integer
+    Dim iCnt As Integer: iCnt = 0
+
+    
+    Set SapGuiAuto = GetObject("SAPGUI")
+    Set SetApp = SapGuiAuto.GetScriptingEngine
+    Set Connection = SetApp.Children(0)
+    Set Session = Connection.Children(0)
+    
+    Session.findById("wnd[0]/tbar[1]/btn[17]").press '변형 가져오기
+    Session.findById("wnd[1]/usr/cntlALV_CONTAINER_1/shellcont/shell").selectedRows = sRowSelect '변형 항목 선택
+    Session.findById("wnd[1]/tbar[0]/btn[2]").press '복수 선택
+    Session.findById("wnd[0]/usr/btn%_SO_WERKS_%_APP_%-VALU_PUSH").press '플랜트 복수 입력 버튼 클릭
+    
+Set Table = session.findById("wnd[0]/usr/cntlGRF_CUSTOM_CONT_01/shellcont/shell/shellcont[1]/shell")
+    
+    allRows = Table.RowCount - 1
+    
+    Dim columns As Object
+    Set columns = Table.ColumnOrder
+    
+    iCol = wbAdd_sub.Sheets(shtName).Cells(1, columns.Count).End(xlToLeft).Column
+    
+    For j = 0 To allRows
+        If InStr(1, Table.GetCellValue(j, columns(0)), "5D", vbBinaryCompare) > 0 Then
+                ReDim Preserve arrList(UBound(arrList) + 1)
+                arrList(UBound(arrList)) = j
+            sError = "정상"
+        Else
+            sError = "오류"
+            GetData_SelectItems = "오류"
+        End If
+        wbAdd_sub.Sheets(shtName).Cells(j + 3, iCol + 1).Value = sError
+    Next
+    
+
+        
+    Set SapGuiAuto = Nothing
+    Set SetApp = Nothing
+    Set Connection = Nothing
+    Set Session = Nothing
+
+End Sub

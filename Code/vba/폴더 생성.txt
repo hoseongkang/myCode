@@ -1,0 +1,7 @@
+Function CreateFolder(sFilePath_WithoutExtention) '하나의 파일마다 폴더 생성
+    Dim fso As New FileSystemObject
+        If fso.FolderExists(sFilePath_WithoutExtention) Then
+            Exit Function
+        Else: fso.CreateFolder sFilePath_WithoutExtention
+        End If
+End Function

@@ -1,0 +1,12 @@
+Function SelectFolder()
+Dim FldrPicker As FileDialog
+Dim myFolder As String
+  Set FldrPicker = Application.FileDialog(msoFileDialogFolderPicker)
+  With FldrPicker
+    .Title = "Select A Target Folder"
+    .AllowMultiSelect = False
+    If .Show <> -1 Then Exit Function
+    myFolder = .SelectedItems(1) & "\"
+  End With
+SelectFolder = myFolder
+End Function

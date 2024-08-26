@@ -1,0 +1,9 @@
+Sub PreserveArr()
+    Dim arrList as Variant: arrList = Array()
+    For i = 4 To iRowEnd
+        ReDim Preserve arrList(UBound(arrList) + 1)
+        arrList(UBound(arrList)) = Range("H" & i).Value
+    Next i
+
+
+End Sub

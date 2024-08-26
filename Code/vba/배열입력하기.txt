@@ -1,0 +1,9 @@
+Sub WriteArrange()
+
+Dim arrData As Variant
+
+arrData = Array(1,2,3)
+
+Range("A10").Resize(, UBound(arrData) + 1) = arrData
+
+End Sub

@@ -1,0 +1,23 @@
+Sub CopyDataToWorkbook(strpath)
+
+    Dim sourceWB As Workbook
+    Dim targetWB As Workbook
+    Dim sourceSheet As Worksheet
+    Dim targetSheet As Worksheet
+    Dim lastRow As Long
+    Dim i As Long
+
+    Set sourceWB = Workbooks.Open(strpath)
+    Set sourceSheet = sourceWB.Sheets(1)
+
+    Set targetWB = ThisWorkbook
+    Set targetSheet = targetWB.Sheets("data")
+
+    Set SourceRange = sourceSheet.UsedRange
+
+    Set targetRange = targetSheet.Range("A1").Resize(SourceRange.Rows.Count, SourceRange.Columns.Count)
+
+    targetRange.Value = SourceRange.Value
+
+    sourceWB.Close False
+End Sub
