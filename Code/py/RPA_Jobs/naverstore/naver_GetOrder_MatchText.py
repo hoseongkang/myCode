@@ -12,8 +12,8 @@ import re
 import joblib
 text_clf = joblib.load('classify_address.pkl')
 
-client_id = '1jsN26VrBJtCXj99tLj5B6'
-client_secret = '$2a$04$xVQfiokNLKBWULOqjdFDJO'
+client_id = '*****'
+client_secret = '$2a$04$*****'
 
 strYear = 2024
 strMonth = 5
