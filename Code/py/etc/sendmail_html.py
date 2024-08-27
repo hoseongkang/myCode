@@ -55,8 +55,8 @@ def send_email(receiver_email, html_content, strName, bChkemp):
 
 def send(data):
     # 사번 살아있는지 확인하는 절차
-    ldap_server = Server("ldap://130.1.22.30:389")
-    ldap_conn = Connection(ldap_server, 'sy\\SYC223351', 'h1s1k6a8g!', auto_bind=True)
+    ldap_server = Server("ldap://*****:389")
+    ldap_conn = Connection(ldap_server, 'sy\\SYC223351', '*****', auto_bind=True)
     ldap_conn.bind()
 
     base_dn = 'DC=sy,DC=com'
