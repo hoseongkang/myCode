@@ -1,9 +1,9 @@
 import pyodbc
 
-server = '130.1.22.33,2433'
+server = '*****'
 database = 'rpaportal_dev'
 username = 'sa'
-password = '@sygrpa22!'
+password = '*****'
 bak_path = 'D:\\Program Files\\Microsoft SQL Server\\MSSQL13.MSSQLSERVER\\MSSQL\\Backup\\rpaportal_dev.bak'
 
 def backup_database(server, database, username, password, backup_path):
