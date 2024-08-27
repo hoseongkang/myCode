@@ -11,8 +11,8 @@ def getTimestamp():
     return timestamp
 
 def getpw(timestamp):
-    client_id = '1jsN26VrBJtCXj99tLj5B6'
-    client_secret = '$2a$04$xVQfiokNLKBWULOqjdFDJO'
+    client_id = '*****'
+    client_secret = '*****'
     pwd = f'{client_id}_{timestamp}'
     hashed = bcrypt.hashpw(pwd.encode('utf-8'), client_secret.encode('utf-8'))
     client_secret_sign = pybase64.standard_b64encode(hashed).decode('utf-8')
@@ -190,10 +190,10 @@ def updateNew(strInput):
     json_orderid_list = get_order(access_token, start_date)
     total_order = get_order_details(access_token, json_orderid_list)
 
-    server = '130.1.22.33,2433'
+    server = '*****'
     database = 'PowerBI'
     username = 'sa'
-    password = '@sygrpa22!'
+    password = '*****!'
 
     conn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+password)
     cursor = conn.cursor()
