@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 import json
 
 def fetch_data_from_api():
-    base_url = "http://openapi.foodsafetykorea.go.kr/api/0b3a06962bed45a9b42f/I0300/xml/"
+    base_url = "http://openapi.foodsafetykorea.go.kr/api/*****/I0300/xml/"
     year = "2019"  # This should match the expected format and be a valid year
     start_index = 1
     end_index = 1000
