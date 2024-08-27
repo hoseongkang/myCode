@@ -3,7 +3,7 @@ def runRPA(taskname):
     url = "http://sygrpa.samyang.com/v1/authentication"
     params = {
         "username": "syds_ad_runapi",
-        "apiKey": "=1_3Z2VXvSdxyklHx^h0je9}uB0i@buALjsJlYJ`"
+        "apiKey": "=*****`"
     }
     headers = {"Content-Type": "application/json"}
 
