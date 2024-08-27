@@ -24,10 +24,10 @@ loopMon = get_dates_from_month('2024-06')
 # strDate = '2024-07-02'
 
 def fetch_access_tokens():
-    db_host = "121.189.58.66"
+    db_host = "*****"
     port = 3306
     db_username = "syds"
-    db_password = "syds123!@$"
+    db_password = "*****"
     db_name = "serveq"
     try:
         connection = pymysql.connect(
