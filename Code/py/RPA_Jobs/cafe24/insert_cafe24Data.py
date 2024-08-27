@@ -25,10 +25,10 @@ def get_dates_from_month(month_str):
 
 
 def fetch_access_tokens():
-    db_host = "121.189.58.66"
+    db_host = "*****"
     port = 3306
     db_username = "syds"
-    db_password = "syds123!@$"
+    db_password = "*****"
     db_name = "serveq"
     try:
         connection = pymysql.connect(
@@ -145,10 +145,10 @@ def insertData(loopMon):
     # with open(file_path, 'r') as file:
         # orderlist = json.load(file)
     # print(orderlist)
-    server = '130.1.22.33,2433'
+    server = '*****'
     database = 'PowerBI'
     username = 'sa'
-    password = '@sygrpa22!'
+    password = '*****!'
 
     conn = pyodbc.connect('DRIVER={SQL Server};SERVER='+server+';DATABASE='+database+';UID='+username+';PWD='+password)
     cursor = conn.cursor()
