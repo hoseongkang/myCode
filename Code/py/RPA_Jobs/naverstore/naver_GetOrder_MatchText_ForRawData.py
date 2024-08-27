@@ -11,8 +11,8 @@ from difflib import SequenceMatcher
 import re
 import joblib
 
-client_id = '1jsN26VrBJtCXj99tLj5B6'
-client_secret = '$2a$04$xVQfiokNLKBWULOqjdFDJO'
+client_id = '*****'
+client_secret = '*****'
 
 strYear = 2024
 strMonth = 8
