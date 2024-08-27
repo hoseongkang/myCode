@@ -6,9 +6,9 @@ import time
 DatabaseConnection = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': 'GetSYUserInfo',
+        'NAME': '*****',
         'USER': 'LoginInfo',
-        'PASSWORD': '!1samyang',
+        'PASSWORD': '*****',
         'HOST': 'syc-app02.sy.com',
         'OPTIONS': {
             'driver': 'ODBC Driver 17 for SQL Server',
